@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\ComponentInterface\Product\ProductInterface;
+
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
@@ -10,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"product" = "Product", "saleproduct" = "SaleProduct"})
  */
-class Product
+class Product implements ProductInterface
 {
     /**
      * @ORM\Id()
@@ -44,68 +46,124 @@ class Product
      */
     private $image;
 
+    /**
+     * {@inheritdoc}
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    /**
+     * {@inheritdoc}
+     */
+    public function setName(string $name): ProductInterface
     {
         $this->name = $name;
 
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription(?string $description): self
+    /**
+     * {@inheritdoc}
+     */
+    public function setDescription(?string $description): ProductInterface
     {
         $this->description = $description;
 
         return $this;
     }
 
-    public function getPrice()
+    /**
+     * {@inheritdoc}
+     */
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice($price): self
+    /**
+     * {@inheritdoc}
+     */
+    public function setPrice(float $price): ProductInterface
     {
         $this->price = $price;
 
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getQuantity(): ?int
     {
         return $this->quantity;
     }
 
-    public function setQuantity(int $quantity): self
+    /**
+     * {@inheritdoc}
+     */
+    public function setQuantity(int $quantity): ProductInterface
     {
         $this->quantity = $quantity;
 
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getImage(): ?string
     {
         return $this->image;
     }
 
-    public function setImage(?string $image): self
+    /**
+     * {@inheritdoc}
+     */
+    public function setImage(?string $image): ProductInterface
     {
         $this->image = $image;
 
         return $this;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasInstances(int $instancesNumber): ?bool
+    {
+        return $this->quantity >= $instancesNumber;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function decreaseQuantity(int $instancesNumber): ?int
+    {
+        if($this->hasInstances($instancesNumber)){
+            $this->quantity -= $instancesNumber;
+            return $this->quantity;
+        }
+
+        return -1;
+    }
+
+
 }

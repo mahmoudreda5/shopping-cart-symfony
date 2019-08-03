@@ -12,6 +12,7 @@ use App\Entity\Product;
 use App\Entity\SaleProduct;
 use App\Entity\Item;
 use App\Entity\OrderItem;
+use App\Entity\CartInterface;
 
 /**
  * @Route("/", name="app_")
@@ -27,6 +28,12 @@ class AppController extends AbstractController
 
         // $cart = $cartRepository->find(3);
         // dump($carts); die;
+
+        $orderC = new OrderCart();
+        $orderC = $orderC->setItemsNumber(7);
+
+        $orderC = $orderC->setTotalPrice(70);
+        dump(get_class($orderC)); die;
 
         /** @var User $user */
         $user = $this->getUser();

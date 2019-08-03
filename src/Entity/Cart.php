@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\ComponentInterface\Cart\CartInterface;
+use App\ComponentInterface\CartItem\CartItemInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CartRepository")
@@ -13,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorMap({"cart" = "Cart", "ordercart" = "OrderCart"})
  */
 
-class Cart
+class Cart implements CartInterface
 {
     /**
      * @ORM\Id()
@@ -34,7 +36,7 @@ class Cart
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Item", mappedBy="cart", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\CartItem", mappedBy="cart", orphanRemoval=true)
      */
     private $items;
 
@@ -43,29 +45,44 @@ class Cart
         $this->items = new ArrayCollection();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getItemsNumber(): ?int
     {
         return $this->items_number;
     }
 
-    public function setItemsNumber(int $items_number): self
+    /**
+     * {@inheritdoc}
+     */
+    public function setItemsNumber(int $items_number): CartInterface
     {
         $this->items_number = $items_number;
 
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getUser(): ?User
     {
         return $this->user;
     }
-
-    public function setUser(?User $user): self
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function setUser(?User $user): CartInterface
     {
         $this->user = $user;
 
@@ -73,14 +90,17 @@ class Cart
     }
 
     /**
-     * @return Collection|Item[]
+     * {@inheritdoc}
      */
     public function getItems(): Collection
     {
         return $this->items;
     }
 
-    public function addItem(Item $item): self
+    /**
+     * {@inheritdoc}
+     */
+    public function addItem(CartItemInterface $item): CartInterface
     {
         if (!$this->items->contains($item)) {
             $this->items[] = $item;
@@ -90,7 +110,10 @@ class Cart
         return $this;
     }
 
-    public function removeItem(Item $item): self
+    /**
+     * {@inheritdoc}
+     */
+    public function removeItem(CartItemInterface $item): CartInterface
     {
         if ($this->items->contains($item)) {
             $this->items->removeElement($item);
@@ -102,4 +125,14 @@ class Cart
 
         return $this;
     }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function calculateItemsNumber(): ?int
+    {
+        return $this->items_number = count($this>items);
+    }
+
 }

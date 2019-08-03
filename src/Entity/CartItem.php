@@ -3,14 +3,18 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\ComponentInterface\CartItem\CartItemInterface;
+use App\ComponentInterface\Cart\CartInterface;
+use App\ComponentInterface\Product\ProductInterface;
+
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ItemRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\CartItemRepository")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"item" = "Item", "orderitem" = "OrderItem"})
+ * @ORM\DiscriminatorMap({"cartitem" = "CartItem", "ordercartitem" = "OrderCartItem"})
  */
-class Item
+class CartItem implements CartItemInterface
 {
     /**
      * @ORM\Id()
@@ -31,29 +35,44 @@ class Item
      */
     private $product;
 
+    /**
+     * {@inheritdoc}
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCart(): ?Cart
+    /**
+     * {@inheritdoc}
+     */
+    public function getCart(): ?CartInterface
     {
         return $this->cart;
     }
 
-    public function setCart(?Cart $cart): self
+    /**
+     * {@inheritdoc}
+     */
+    public function setCart(?CartInterface $cart): CartItemInterface
     {
         $this->cart = $cart;
 
         return $this;
     }
 
-    public function getProduct(): ?Product
+    /**
+     * {@inheritdoc}
+     */
+    public function getProduct(): ?ProductInterface
     {
         return $this->product;
     }
 
-    public function setProduct(?Product $product): self
+    /**
+     * {@inheritdoc}
+     */
+    public function setProduct(?ProductInterface $product): CartItemInterface
     {
         $this->product = $product;
 
