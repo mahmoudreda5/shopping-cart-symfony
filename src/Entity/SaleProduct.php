@@ -28,13 +28,13 @@ class SaleProduct extends Product implements SaleProductInterface
      */
     private $discount;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    // /**
+    //  * {@inheritdoc}
+    //  */
+    // public function getId(): ?int
+    // {
+    //     return parent::getId();
+    // }
 
     /**
      * {@inheritdoc}
@@ -78,6 +78,14 @@ class SaleProduct extends Product implements SaleProductInterface
     public function calculateDiscount(): ?float
     {
         return $this->discount = ($this->price - $this->sale_price) / $this->price * 100;
+    }
+
+    /**
+     * return actual price wil be paid
+     */
+    public function getPaidPrice(): ?float
+    {
+        return $this->sale_price;
     }
 
 

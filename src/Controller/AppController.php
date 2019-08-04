@@ -4,15 +4,11 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\Cart;
-use App\Entity\OrderCart;
-use App\Repository\CartRepository;
-use App\Repository\OrderCartRepository;
+use App\Repository\ProductRepository;
 use App\Entity\Product;
-use App\Entity\SaleProduct;
-use App\Entity\Item;
-use App\Entity\OrderItem;
-use App\Entity\CartInterface;
+use App\Entity\User;
+use App\Repository\OrderCartRepository;
+use App\ComponentInterface\Factory\OrderCartFactory;
 
 /**
  * @Route("/", name="app_")
@@ -20,59 +16,43 @@ use App\Entity\CartInterface;
 class AppController extends AbstractController
 {
     /**
-     * @Route("/home/{id}", name="home")
+     * @Route("/home", name="home")
      */
-    public function index(SaleProduct $saleProduct, OrderCartRepository $cartRepository)
+    public function index(ProductRepository $productRepository)
     {
 
+        $products = $productRepository->findAll();
+        // dump($products); die;
 
-        // $cart = $cartRepository->find(3);
-        // dump($carts); die;
+        return $this->render("app/index.html.twig", ["products" => $products]);
 
-        $orderC = new OrderCart();
-        $orderC = $orderC->setItemsNumber(7);
-
-        $orderC = $orderC->setTotalPrice(70);
-        dump(get_class($orderC)); die;
-
-        /** @var User $user */
-        $user = $this->getUser();
-
-        $userCart = $cartRepository->findOrderCartByUser($user);
-        // dump($userCart); die;
-
-        $item = new OrderItem();
-        $item->setQuantity(7);
-        $item->setProduct($saleProduct);
-
-        $userCart->addItem($item);
-
-        // $cart = new OrderCart();
-        // $cart->setItemsNumber(7);
-        // $cart->setTotalPrice(170);
-
-        // $user->addCart($cart);
-
-        // $product = new SaleProduct();
-        // $product->setName("product");
-        // $product->setDescription("product des");
-        // $product->setPrice(70);
-        // $product->setQuantity(17);
-        // $product->setImage("conan.jpg");
-
-        // $product->setSalePrice(35);
-        // $product->setDiscount(50);
-
-
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($item);
-        // $entityManager->remove($cart);
-        $entityManager->flush();
-
-        dump($item); die;
-
-        // return $this->render('app/index.html.twig', [
-        //     'controller_name' => 'AppController',
-        // ]);
     }
+
+    /**
+     * @Route("/show/product/{id}", name="show_product")
+     */
+    public function showProduct(Product $product, OrderCartFactory $orderCartFactory){
+
+        //get authenticated user
+        // /** @var User $user */
+        // $user = $this->getUser();
+
+        //check if product exist on authenticated user OrderCart
+        $productAddedToCart = $orderCartFactory->hasProduct($product);
+
+        return $this->render("app/product_show.html.twig", ["product" => $product, "productAddedToCart" => $productAddedToCart]);
+        
+    }
+
+    /**
+     * @Route("/order/product/{id}", name="order_product")
+     */
+    public function addProductToOrderCart(Product $product, OrderCartFactory $orderCartFactory){
+
+        //add product to authenticated user OrderCart
+        $orderCartFactory->addProduct($product);
+
+        return $this->redirectToRoute('app_show_product', ["id" => $product->getId()]);
+    }
+
 }

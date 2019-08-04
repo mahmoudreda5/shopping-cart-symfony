@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\OrderCart;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use App\ComponentInterface\Cart\CartInterface;
+use App\Entity\User;
+use App\ComponentInterface\Repos\CartRepositoryInterface;
 
 /**
  * @method OrderCart|null find($id, $lockMode = null, $lockVersion = null)
@@ -12,7 +15,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method OrderCart[]    findAll()
  * @method OrderCart[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class OrderCartRepository extends ServiceEntityRepository
+class OrderCartRepository extends ServiceEntityRepository implements CartRepositoryInterface
 {
     public function __construct(RegistryInterface $registry)
     {
@@ -49,7 +52,10 @@ class OrderCartRepository extends ServiceEntityRepository
     */
 
 
-    public function findOrderCartByUser($user){
+    /**
+     * {@inheritdoc}
+     */
+    public function findCartByUser(User $user): CartInterface{
 
         return $this->createQueryBuilder('o')
             ->innerJoin('o.user', 'u')

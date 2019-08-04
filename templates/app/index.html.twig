@@ -1,9 +1,37 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AppController!{% endblock %}
+{% block title %} Products {% endblock %}
 
 {% block body %}
 
-    Hello
+    {% for product in products %}
+        <div class="col-md-3 float-left">
+            <figure class="card card-sm card-product">
+            {% if product.salePrice is defined %}
+                <span class="badge-new" style="color: red"> Sale Product </span>
+            {% else %}
+                <span class="badge-new"> Normal Product </span>                    
+            {% endif %}
+                <div class="img-wrap"> <a href="{{ path('app_show_product', {id: product.id}) }}" ><img width="100%" height="70%" src="{{ asset('uploads/' ~ product.image) }}"> </a> </div>
+                <figcaption class="info-wrap text-center">
+                    <h6 class="title text-truncate"><a style="text-decoration: none" href="{{ path('app_show_product', {id: product.id}) }}"> {{ product.name }} </a></h6>
+
+                    <div class="action-wrap">
+
+                    <p> {{product.description|slice(0,70) ~ ".."}} </p>
+				
+				<div class="price-wrap h5">
+                    {% if product.salePrice is defined %}
+					<del class="price-old"> {{ product.price }}</del>
+					<span class="price-new"> {{ product.salePrice }} </span>
+                    {% else %}
+					<span class="price-new"> {{ product.price }}</span>                        
+                    {% endif %}                    
+				</div> <!-- price-wrap.// -->
+			</div> <!-- action-wrap -->
+                </figcaption>
+            </figure> <!-- card // -->
+        </div> <!-- col // -->
+    {% endfor %}
 
 {% endblock %}

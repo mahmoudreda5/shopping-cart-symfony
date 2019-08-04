@@ -58,4 +58,16 @@ interface CartInterface{
      */
     public function calculateItemsNumber(): ?int;
 
+    /**
+     * @param int $instancesNumber
+     * @return int
+     */
+    public function increaseItemsNumber(int $instancesNumber): ?int;
+
+    /**
+     * @param int $instancesNumber
+     * @return int
+     */
+    public function decreaseItemsNumber(int $instancesNumber): ?int;
+
 }

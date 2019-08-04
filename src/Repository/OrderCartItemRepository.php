@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\OrderCartItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use App\ComponentInterface\Repos\CartItemRepositoryInterface;
+use App\ComponentInterface\CartItem\CartItemInterface;
+use App\ComponentInterface\Product\ProductInterface;
 
 /**
  * @method OrderItem|null find($id, $lockMode = null, $lockVersion = null)
@@ -12,7 +15,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method OrderItem[]    findAll()
  * @method OrderItem[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class OrderCartItemRepository extends ServiceEntityRepository
+class OrderCartItemRepository extends ServiceEntityRepository implements CartItemRepositoryInterface
 {
     public function __construct(RegistryInterface $registry)
     {
@@ -47,4 +50,43 @@ class OrderCartItemRepository extends ServiceEntityRepository
         ;
     }
     */
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findProductsWithCartId(int $cart_id){
+
+        return $this->createQueryBuilder('o')
+            ->innerJoin('o.product', 'p')
+            ->innerJoin('o.cart', 'cart')
+            ->addSelect('p')
+            ->andWhere('cart.id = :id')
+            ->setParameter('id', $cart_id)
+            ->getQuery()
+            ->getArrayResult()
+        ;
+
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findCartItemByCartIdAndProductId(int $cart_id, int $product_id): CartItemInterface{
+
+        return $this->createQueryBuilder('o')
+            ->innerJoin('o.product', 'p')
+            ->innerJoin('o.cart', 'cart')
+            ->addSelect('o')
+            ->andWhere('cart.id = :cart_id')
+            ->andWhere('p.id = :product_id')
+            ->setParameter('cart_id', $cart_id)
+            ->setParameter('product_id', $product_id)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+
+    }
+
+    
 }

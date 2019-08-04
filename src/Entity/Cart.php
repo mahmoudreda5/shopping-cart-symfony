@@ -107,6 +107,9 @@ class Cart implements CartInterface
             $item->setCart($this);
         }
 
+        //update items number
+        $this->items_number = $this->items_number ? $this->items_number + 1 : 0;
+
         return $this;
     }
 
@@ -123,6 +126,9 @@ class Cart implements CartInterface
             }
         }
 
+        //update items number
+        $this->items_number = $this->items_number ? $this->items_number - 1 : 0;
+
         return $this;
     }
 
@@ -132,7 +138,23 @@ class Cart implements CartInterface
      */
     public function calculateItemsNumber(): ?int
     {
-        return $this->items_number = count($this>items);
+        return $this->items_number = count($this->items);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function increaseItemsNumber(int $instancesNumber): ?int
+    {
+        return $this->items_number += $instancesNumber;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function decreaseItemsNumber(int $instancesNumber): ?int
+    {
+        return $this->items_number -= $instancesNumber;
     }
 
 }

@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Product Details {% endblock %}
+
+{% block body %}
+
+    
+    {% if product %}
+        <div class="card">
+            <div class="row no-gutters">
+                <aside class="col-sm-5 border-right">
+        <article class="gallery-wrap"> 
+        <div class="img-big-wrap">
+        <div> <a href="{{ asset('uploads/' ~ product.image) }}" data-fancybox=""><img width="100%" height="100%" src="{{ asset('uploads/' ~ product.image) }}"></a></div>
+        </div> <!-- slider-product.// -->
+        <div class="img-small-wrap">
+        </div> <!-- slider-nav.// -->
+        </article> <!-- gallery-wrap .end// -->
+                </aside>
+                <aside class="col-sm-7">
+        <article class="p-5">
+            <h3 class="title mb-3"> {{product.name}} </h3>
+
+        {% if product.salePrice is defined %}
+        <div class="mb-3"> 
+            <var class="price h3 text-warning"> 
+                <del class="currency">US $</span><span class="num"> {{ product.price }}</del>
+            </var> 
+            {# <span>/per kg</span>  #}
+        </div> <!-- price-detail-wrap .// -->
+
+        <div class="mb-3"> 
+            <var class="price h3 text-warning"> 
+                <span class="currency">US $</span><span class="num"> {{ product.salePrice }}</span>
+            </var> 
+            {# <span>/per kg</span>  #}
+        </div> <!-- price-detail-wrap .// -->
+        {% else %}
+            <div class="mb-3"> 
+            <var class="price h3 text-warning"> 
+                <span class="currency">US $</span><span class="num"> {{ product.price }}</span>
+            </var> 
+            {# <span>/per kg</span>  #}
+        </div> <!-- price-detail-wrap .// -->
+        {% endif %}
+        
+        
+        <dl>
+        <dt>Description</dt>
+        <dd><p> {{ product.description }} </p></dd>
+        </dl>
+        
+        
+            <hr>
+            <a href="#" class="btn  btn-primary"> Buy now </a>
+            {% if productAddedToCart %}
+            <span class="btn btn-outline-primary"> <i class="fas fa-shopping-cart"></i> Product Added To Cart </span>            
+            {% else %}
+            <a href="{{ path('app_order_product', {id: product.id}) }}" class="btn  btn-outline-primary"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+            {% endif %}
+            
+            {# <a href="{{ path('cart.addItem', {id: product.id}) }}" class="btn  btn-outline-primary"> <i class="fas fa-shopping-cart"></i> Add to cart </a> #}
+        </article> <!-- card-body.// -->
+                </aside> <!-- col.// -->
+            </div> <!-- row.// -->
+        </div> <!-- card.// -->
+
+
+    {% endif %}
+    
+
+
+{% endblock %}

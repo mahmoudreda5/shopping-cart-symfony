@@ -68,16 +68,22 @@ interface ProductInterface{
 
     /**
      * check if product have enough instance to order
-     * @param int $CartItemInterface
+     * @param int $instancesNumber
      * @return bool
      */
     public function hasInstances(int $instancesNumber): ?bool;
 
     /**
      * decrease item stock quantity with number of instances and return new product stock quantity, NOTE: you need to persist Product Object to update DB
-     * @param int $CartItemInterface
+     * @param int $instancesNumber
      * @return int new quantity or -1 if not enough quantity found
      */
     public function decreaseQuantity(int $instancesNumber): ?int;
 
+    /**
+     * increase item stock quantity with number of instances and return new product stock quantity, NOTE: you need to persist Product Object to update DB
+     * @param int $instancesNumber
+     * @return int new quantity
+     */
+    public function increaseQuantity(int $instancesNumber): ?int;
 }

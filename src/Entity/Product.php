@@ -39,7 +39,7 @@ class Product implements ProductInterface
     /**
      * @ORM\Column(type="integer")
      */
-    private $quantity;
+    private $quantity;  //stock quantity
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -164,6 +164,30 @@ class Product implements ProductInterface
 
         return -1;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function increaseQuantity(int $instancesNumber): ?int
+    {
+        return $this->quantity += $instancesNumber;
+    }
+
+    /**
+     * return actual price wil be paid
+     */
+    public function getPaidPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    // /**
+    //  * for testing purposes
+    //  */
+    // public function __toString()
+    // {
+    //     return json_encode($this);
+    // }
 
 
 }

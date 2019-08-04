@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cart Products{% endblock %}
+
+{% block body %}
+
+<div id="card" class="card">
+<table class="table table-hover shopping-cart-wrap">
+<thead class="text-muted">
+<tr>
+  <th scope="col">Product</th>
+  <th scope="col" width="120">Quantity</th>
+  <th scope="col" width="120">Price</th>
+  <th scope="col" width="200" class="text-right">Action</th>
+</tr>
+</thead>
+<tbody>
+
+{% for item in items %}
+    <tr>
+	<td>
+<figure class="media"> {{ loop.index0 + 1 }}
+	<div class="img-wrap"><img width="40%" height="30%" src="{{ asset('uploads/' ~ item.product.image ) }}" class="img-thumbnail img-sm"></div>
+	<figcaption class="media-body">
+		<h5 class="title text-truncate"> {{ item.product.name }} </h5>
+        {% if item.product.discr == 'saleproduct' %}
+            <dl class="dlist-inline small">
+                <h6 style="color: red"> Sale Product <h6>
+		    </dl>
+        {% endif %}
+	</figcaption>
+</figure> 
+	</td>
+	<td> 
+		<select data-id="{{ item.product.id }}" class="form-control">
+
+            {% for i in 1 .. item.product.quantity %}
+			    <option value="{{ i }}" {% if i == item.quantity %} selected {% endif %}> {{i}} </option>                
+            {% endfor %}
+				
+		</select> 
+	</td>
+	<td> 
+		<div class="price-wrap"> 
+			<var class="price">USD {{ item.total_price }}</var> 
+			<small class="text-muted">({{ item.product.price }} each)</small> 
+		</div> <!-- price-wrap .// -->
+	</td>
+	<td class="text-right"> 
+	<a title="" href="" class="btn btn-outline-success" data-toggle="tooltip" data-original-title="Save to Wishlist"> <i class="fa fa-heart"></i></a> 
+	<a href="{{ path('order_cart_remove_item', {id: item.product.id}) }}" class="btn btn-outline-danger"> × Remove</a>
+	</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+</div> <!-- card.// -->
+
+    <h6 style="color: red" class="float-right"> Total Price: {{totalPrice}} <h6>
+    <div class="clearfix"></div>
+	<a href="{{ path('order_cart_clear') }}" class="btn btn-outline-danger float-right"> Clear Cart </a>
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+<script>
+
+const quantity = document.getElementById('card');
+if(quantity){
+
+  quantity.addEventListener('change', (e) => {
+    // var xmlHttpRequest = new XMLHttpRequest();
+    var id = e.target.getAttribute("data-id");
+    // alert(id + " - " + e.target.value); return;
+    fetch(`edit-item/${id}`, {
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({quantity: e.target.value}),
+        method: "POST"
+        }).then(res => window.location.reload());
+  });
+
+}
+
+</script>
+
+{% endblock %}

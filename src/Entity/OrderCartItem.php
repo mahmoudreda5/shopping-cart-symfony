@@ -28,13 +28,13 @@ class OrderCartItem extends CartItem implements OrderCartItemInterface
      */
     private $total_price;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    // /**
+    //  * {@inheritdoc}
+    //  */
+    // public function getId(): ?int
+    // {
+    //     return $this->id;
+    // }
 
     /**
      * {@inheritdoc}
@@ -77,7 +77,7 @@ class OrderCartItem extends CartItem implements OrderCartItemInterface
      */
     public function calculatetotalPrice(): ?float
     {
-        return $this->total_price = $this->product->getTotalPrice() * $this->quantity();
+        return $this->total_price = $this->product->getPaidPrice() * $this->quantity();
     }
 
 

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\ComponentInterface\Cart\CartInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -143,14 +144,14 @@ class User implements UserInterface
     }
 
     /**
-     * @return Collection|Cart[]
+     * @return Collection|CartInterface[]
      */
     public function getCarts(): Collection
     {
         return $this->carts;
     }
 
-    public function addCart(Cart $cart): self
+    public function addCart(CartInterface $cart): self
     {
         if (!$this->carts->contains($cart)) {
             $this->carts[] = $cart;
@@ -160,7 +161,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function removeCart(Cart $cart): self
+    public function removeCart(CartInterface $cart): self
     {
         if ($this->carts->contains($cart)) {
             $this->carts->removeElement($cart);

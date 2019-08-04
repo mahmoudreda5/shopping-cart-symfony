@@ -23,13 +23,13 @@ class OrderCart extends Cart implements OrderCartInterface
      */
     private $total_price;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    // /**
+    //  * {@inheritdoc}
+    //  */
+    // public function getId(): ?int
+    // {
+    //     return $this->id;
+    // }
 
     /**
      * {@inheritdoc}
@@ -59,7 +59,7 @@ class OrderCart extends Cart implements OrderCartInterface
 
         //for each order item price = quantity * product price
         //total order price is sum of items prices
-        foreach($this->items as $orderItem){
+        foreach($this->getItems() as $orderItem){
             /** @var OrderItemInterface $orderItem */
             $totalPrice += $orderItem->getTotalPrice();
         }
