@@ -1,0 +1,38 @@
+*task summary*
+
+i tried to implement good OO design with some SOLID principles and Design Patterns techniques 
+
+--application main components
+-User
+-Cart
+-CartItem
+-Product
+
+--Doctrine/Database Structure
+excluding user, for each main component i have entity parent that share common functionalities
+and child entites extends it, and implements it's own specific ones if needed.
+
+using doctrine inheritance mapping / OO structure
+- Cart base/parent Entity (OrderCart - WishlistCart) children => JOINED/CTI
+- CartItem base/parent Entity (OrderCartItem) child => SINGLE_TABLE/STI
+- Product (NormalProduct) base/parent Entity (SaleProduct) child => JOINED/CTI
+
+*each entity has it's Contract/Interface
+
+--relations
+-User one-to-many Cart, user can have many carts of different types, only one of each type
+-Cart one-to-many CartItem, cartitem is the intermidate/bridge table between Cart and Product (many-to-many)
+-Cart one-to-many CartItem
+
+--cart factories
+each cart type should extends base cart factory to inherit main cart functionalities
+
+--finally, how i added new cart type (WishlistCart)
+-make Cart entity that extends Cart parent Entity, make cart contract/interface and implement it
+-you can use base CartItem as bridge or you can make new CartItem extends CartItem and implements it's own contract
+-Cart Repo should implement CartRepository Intreface to provide some helper methods for the CartFacroty
+-finally make cart factory that extends base CartFactory to inherit cart base functionalities (addProduct, removeProduct, etc.)
+and you can implement your own interface to define custom cart functionalities.
+
+that's it :D
+
