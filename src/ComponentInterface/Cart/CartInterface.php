@@ -70,4 +70,9 @@ interface CartInterface{
      */
     public function decreaseItemsNumber(int $instancesNumber): ?int;
 
+    /**
+     * handle any inner stuff of cart when it about to persisted to DB
+     */
+    public function handleInnerStuffBeforePersist();
+
 }

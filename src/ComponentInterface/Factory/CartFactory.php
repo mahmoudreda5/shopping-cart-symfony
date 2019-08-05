@@ -14,10 +14,13 @@ use App\ComponentInterface\Cart\CartInterface;
 use App\ComponentInterface\Product\ProductInterface;
 use App\ComponentInterface\CartItem\CartItemInterface;
 use App\Entity\CartItem;
+use App\ComponentInterface\Cart\WishlistCartInterface;
+use App\Entity\WishlistCart;
 
+/** abstract class that defines basic objects and functionalities (by implementing CartFactoryInterface) for any cart */
 abstract class CartFactory implements CartFactoryInterface{
 
-    //class responsibile for handling cart actions like: addProducts to the cart, edit Cart, clear Cart, etc.
+    //class responsibile for handling basic cart actions like: addProducts to the cart, edit Cart, clear Cart, etc.
 
     /**
      * authenticated user
@@ -69,8 +72,7 @@ abstract class CartFactory implements CartFactoryInterface{
      * {@inheritdoc}
      */
     public function instantiateCart(string $cartType): CartInterface{
-
-        //instantiateCart
+        //instantiateCart //factory method design pattern
         //if user has cart retrieve it from DB, else create one
         //we have cartRepository instance, so it will poly. get the right card
         $this->cart = $this->cartRepository->findCartByUser($this->user);
@@ -92,6 +94,7 @@ abstract class CartFactory implements CartFactoryInterface{
      */
     private function getCardInstance($cartType){
 
+        $cart = null;
         //add instantiation condition for each cart type
         if($cartType === OrderCartInterface::class || $cartType === OrderCart::class){
 
@@ -99,10 +102,15 @@ abstract class CartFactory implements CartFactoryInterface{
             $cart->setItemsNumber(0);
             $cart->setTotalPrice(0);
 
-            return $cart;
+        }else if($cartType === WishlistCartInterface::class || $cartType === WishlistCart::class){
+
+            $cart = new WishlistCart();
+            $cart->setItemsNumber(0);
 
         }else return new Cart();  //else return base cart
 
+        
+        return $cart;
     }
 
 
@@ -117,8 +125,9 @@ abstract class CartFactory implements CartFactoryInterface{
         $cartItem->setProduct($product);  //product relashion established
         $this->cart->addItem($cartItem);  //cart relashion established, we can $orderCartItem->setCart($this->cart) too but this is more readable
 
-        $this->cart->calculateTotalPrice();  //update cart items number and price, need to be persisted
+        $this->cart->handleInnerStuffBeforePersist();  //update cart items number and other stuff dependent on cart type, need to be persisted
 
+        //persist changes to DB
         $this->entityManager->persist($cartItem);
         $this->entityManager->persist($this->cart);
 
@@ -145,16 +154,19 @@ abstract class CartFactory implements CartFactoryInterface{
         //         $this->entityManager->flush();
         //     }
 
-        //this can be done also using OrderCartItemRepo instead of looping through all cart items to get the one refer to this product, we can simply made
+        //this can be done also using OrderCartItemRepo instead of looping through all cart items to get the one refer to this product, we can simply make
         //a function that select this OrderCartItem based on cart id and product id, but we have to inject OrderCartItemRepo to constructor so any will work anyway
         //you can see above techniqe too, both are okay
+
+        //get cartIten relate between cart and product
         $cartItem = $this->cartItemRepository->findCartItemByCartIdAndProductId(
             $this->cart->getId(),
             $product->getId()
         );
 
-        $this->cart->calculateTotalPrice();  //update cart items number and price, need to be persisted
+        $this->cart->handleInnerStuffBeforePersist();  //update cart items number and other stuff dependent on cart type, need to be persisted        
 
+        //persist changes to DB
         $this->removeCartItemAndPersistChanges($cartItem);
         $this->entityManager->persist($this->cart);
         
@@ -173,11 +185,9 @@ abstract class CartFactory implements CartFactoryInterface{
         foreach($this->cart->getItems() as $item)
             $this->removeCartItemAndPersistChanges($item);
       
+        $this->cart->handleInnerStuffBeforePersist();  //update cart items number and other stuff dependent on cart type, need to be persisted        
 
-        //reset authenticated user cart 
-        $this->cart->setItemsNumber(0);
-        $this->cart->setTotalPrice(0);
-
+        //persist changes to DB
         $this->entityManager->persist($this->cart);        
         $this->entityManager->flush();
         

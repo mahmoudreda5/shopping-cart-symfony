@@ -12,6 +12,6 @@ interface CartRepositoryInterface{
      * @param $user
      * @return CartInterface
      */
-    public function findCartByUser(User $user): CartInterface;
+    public function findCartByUser(User $user);
 
 }

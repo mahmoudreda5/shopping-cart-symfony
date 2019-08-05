@@ -55,7 +55,7 @@ class OrderCartRepository extends ServiceEntityRepository implements CartReposit
     /**
      * {@inheritdoc}
      */
-    public function findCartByUser(User $user): CartInterface{
+    public function findCartByUser(User $user){
 
         return $this->createQueryBuilder('o')
             ->innerJoin('o.user', 'u')

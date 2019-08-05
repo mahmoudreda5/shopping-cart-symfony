@@ -12,7 +12,7 @@ use App\ComponentInterface\CartItem\CartItemInterface;
  * @ORM\Entity(repositoryClass="App\Repository\CartRepository")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"cart" = "Cart", "ordercart" = "OrderCart"})
+ * @ORM\DiscriminatorMap({"cart" = "Cart", "ordercart" = "OrderCart", "wishlistcart" = "WishlistCart"})
  */
 
 class Cart implements CartInterface
@@ -155,6 +155,15 @@ class Cart implements CartInterface
     public function decreaseItemsNumber(int $instancesNumber): ?int
     {
         return $this->items_number -= $instancesNumber;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handleInnerStuffBeforePersist(){
+        //nothing to do till now for basic cart, but it will have somethig to do on childs
+        //so we can override it and use it over parent or any child with different functionalities and same method
+        //yes you guesed it, polymorphism
     }
 
 }

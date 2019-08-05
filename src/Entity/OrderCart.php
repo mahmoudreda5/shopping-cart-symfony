@@ -68,4 +68,13 @@ class OrderCart extends Cart implements OrderCartInterface
         return $this->total_price = $totalPrice;
     }
 
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handleInnerStuffBeforePersist()
+    {
+        $this->calculateTotalPrice();
+    }
+
 }

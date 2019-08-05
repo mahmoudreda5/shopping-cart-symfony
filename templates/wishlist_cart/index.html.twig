@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cart Products{% endblock %}
+
+{% block body %}
+
+<div id="card" class="card">
+<table class="table table-hover shopping-cart-wrap">
+<thead class="text-muted">
+<tr>
+  <th scope="col">Product</th>
+  <th scope="col" width="200" class="text-right">Action</th>
+</tr>
+</thead>
+<tbody>
+
+{% for item in wishlistItems %}
+    <tr>
+	<td>
+<figure class="media"> {{ loop.index0 + 1 }}
+	<div class="img-wrap"><a href="{{ path('app_show_product', {id: item.product.id}) }}"><img width="20%" height="10%" src="{{ asset('uploads/' ~ item.product.image ) }}" class="img-thumbnail img-sm"></a></div>
+	<figcaption class="media-body">
+		<h5 class="title text-truncate"><a href="{{ path('app_show_product', {id: item.product.id}) }}"> {{ item.product.name }} </a> </h5>
+	</figcaption>
+</figure> 
+	<td class="text-right"> 
+	{# <a title="" href="" class="btn btn-outline-success" data-toggle="tooltip" data-original-title="Save to Wishlist"> <i class="fa fa-heart"></i></a>  #}
+	<a href="{{ path('wishlist_cart_remove_item', {id: item.product.id}) }}" class="btn btn-outline-danger"> × Remove</a>
+	</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+</div> <!-- card.// -->
+
+	<a href="{{ path('wishlist_cart_clear') }}" class="btn btn-outline-danger float-right"> Clear Cart </a>
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+<script>
+
+</script>
+
+{% endblock %}

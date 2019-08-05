@@ -18,6 +18,6 @@ interface CartItemRepositoryInterface{
      * @param int,int
      * @return CartInterface
      */
-    public function findCartItemByCartIdAndProductId(int $cart_id, int $product_id): CartItemInterface;
+    public function findCartItemByCartIdAndProductId(int $cart_id, int $product_id);
 
 }

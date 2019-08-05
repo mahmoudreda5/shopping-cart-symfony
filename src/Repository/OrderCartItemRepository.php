@@ -72,7 +72,7 @@ class OrderCartItemRepository extends ServiceEntityRepository implements CartIte
     /**
      * {@inheritdoc}
      */
-    public function findCartItemByCartIdAndProductId(int $cart_id, int $product_id): CartItemInterface{
+    public function findCartItemByCartIdAndProductId(int $cart_id, int $product_id){
 
         return $this->createQueryBuilder('o')
             ->innerJoin('o.product', 'p')

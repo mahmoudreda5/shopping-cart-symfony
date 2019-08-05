@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\ComponentInterface\Factory\OrderCartFactory;
 use App\Entity\Product;
-use App\Entity\OrderCartItem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -32,6 +31,16 @@ class OrderCartController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/add-item/{id}", name="add_item")
+     */
+    public function addCartItem(Product $product, OrderCartFactory $orderCartFactory){
+
+        //add product to authenticated user OrderCart
+        $orderCartFactory->addProduct($product);
+
+        return $this->redirectToRoute('app_show_product', ["id" => $product->getId()]);
+    }
 
     /**
      * @Route("/remove-item/{id}", name="remove_item")

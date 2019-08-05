@@ -56,7 +56,7 @@ class OrderCartFactory extends CartFactory{
     }
 
     /**
-     * edit product CartItem quantity
+     * edit product CartItem quantity and update items number and total price
      * @param ProductInterface
      * @return int
      */
@@ -74,7 +74,7 @@ class OrderCartFactory extends CartFactory{
             //calculate new total price based on new quantity
             $cartItem->setTotalPrice($product->getPaidPrice() * $quantity);
 
-            $this->cart->calculateTotalPrice();  //update cart items number and price, need to be persisted            
+            $this->cart->handleInnerStuffBeforePersist();  //update cart items number and price, need to be persisted            
 
             //persist CartItem changes
             $this->entityManager->persist($cartItem);
@@ -84,5 +84,6 @@ class OrderCartFactory extends CartFactory{
 
         return -1;
     }
+
 
 }

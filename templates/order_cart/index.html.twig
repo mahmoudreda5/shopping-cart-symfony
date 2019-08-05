@@ -20,9 +20,9 @@
     <tr>
 	<td>
 <figure class="media"> {{ loop.index0 + 1 }}
-	<div class="img-wrap"><img width="40%" height="30%" src="{{ asset('uploads/' ~ item.product.image ) }}" class="img-thumbnail img-sm"></div>
+	<div class="img-wrap"> <a href="{{ path('app_show_product', {id: item.product.id}) }}"> <img width="30%" height="20%" src="{{ asset('uploads/' ~ item.product.image ) }}" class="img-thumbnail img-sm"> </a></div>
 	<figcaption class="media-body">
-		<h5 class="title text-truncate"> {{ item.product.name }} </h5>
+		<h5 class="title text-truncate"><a href="{{ path('app_show_product', {id: item.product.id}) }}"> {{ item.product.name }} </a></h5>
         {% if item.product.discr == 'saleproduct' %}
             <dl class="dlist-inline small">
                 <h6 style="color: red"> Sale Product <h6>
@@ -47,7 +47,7 @@
 		</div> <!-- price-wrap .// -->
 	</td>
 	<td class="text-right"> 
-	<a title="" href="" class="btn btn-outline-success" data-toggle="tooltip" data-original-title="Save to Wishlist"> <i class="fa fa-heart"></i></a> 
+	{# <a title="" href="" class="btn btn-outline-success" data-toggle="tooltip" data-original-title="Save to Wishlist"> <i class="fa fa-heart"></i></a> #}
 	<a href="{{ path('order_cart_remove_item', {id: item.product.id}) }}" class="btn btn-outline-danger"> × Remove</a>
 	</td>
 </tr>

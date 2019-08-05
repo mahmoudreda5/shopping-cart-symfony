@@ -174,7 +174,7 @@ class Product implements ProductInterface
     }
 
     /**
-     * return actual price wil be paid
+     * return actual price wil be paid (salePrice in case of saleProduct), same function with diff functionality based on instance type
      */
     public function getPaidPrice(): ?float
     {

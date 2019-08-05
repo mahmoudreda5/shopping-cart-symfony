@@ -52,11 +52,17 @@
         
         
             <hr>
-            <a href="#" class="btn  btn-primary"> Buy now </a>
-            {% if productAddedToCart %}
-            <span class="btn btn-outline-primary"> <i class="fas fa-shopping-cart"></i> Product Added To Cart </span>            
+
+            {% if productAddedToWishlistCart %}
+            <span class="btn btn-primary"> <i class="fa fa-shopping-cart"></i> Product Added To Wishlist </span>            
             {% else %}
-            <a href="{{ path('app_order_product', {id: product.id}) }}" class="btn  btn-outline-primary"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+            <a href="{{ path('wishlist_cart_add_item', {id: product.id}) }}" class="btn  btn-primary"> <i class="fa fa-shopping-cart"></i> Add to Wishlist </a>
+            {% endif %}
+
+            {% if productAddedToOrderCart %}
+            <span class="btn btn-outline-primary"> <i class="fa fa-shopping-cart"></i> Product Added To Cart </span>            
+            {% else %}
+            <a href="{{ path('order_cart_add_item', {id: product.id}) }}" class="btn  btn-outline-primary"> <i class="fa fa-shopping-cart"></i> Add to cart </a>
             {% endif %}
             
             {# <a href="{{ path('cart.addItem', {id: product.id}) }}" class="btn  btn-outline-primary"> <i class="fas fa-shopping-cart"></i> Add to cart </a> #}
