@@ -33,14 +33,19 @@ class AppController extends AbstractController
     public function showProduct(Product $product, OrderCartFactory $orderCartFactory, WishlistCartFactory $wishlistCartFactory){
 
         //get authenticated user
-        // /** @var User $user */
-        // $user = $this->getUser();
+        /** @var User $user */
+        $user = $this->getUser();
 
-        //check if product exist on authenticated user OrderCart
-        $productAddedToOrderCart = $orderCartFactory->hasProduct($product);
+        $productAddedToOrderCart = null;
+        $productAddedToWishlistCart = null;
+        if($user){
+            //check if product exist on authenticated user OrderCart
+            $productAddedToOrderCart = $orderCartFactory->hasProduct($product);
 
-        //check if product exist on authenticated user wishlistCart
-        $productAddedToWishlistCart = $wishlistCartFactory->hasProduct($product);
+            //check if product exist on authenticated user wishlistCart
+            $productAddedToWishlistCart = $wishlistCartFactory->hasProduct($product);
+        }
+        
 
         return $this->render("app/product_show.html.twig", [
             "product" => $product,

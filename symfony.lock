@@ -1,4 +1,7 @@
 {
+    "botman/botman": {
+        "version": "2.5.0"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -105,11 +108,17 @@
             "./config/packages/dev/easy_log_handler.yaml"
         ]
     },
+    "evenement/evenement": {
+        "version": "v3.0.1"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
     "monolog/monolog": {
         "version": "1.24.0"
+    },
+    "mpociot/pipeline": {
+        "version": "1.0.2"
     },
     "nikic/php-parser": {
         "version": "v4.2.2"
@@ -120,6 +129,9 @@
     "ocramius/proxy-manager": {
         "version": "2.2.2"
     },
+    "opis/closure": {
+        "version": "3.3.1"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
@@ -128,6 +140,27 @@
     },
     "psr/log": {
         "version": "1.1.0"
+    },
+    "react/cache": {
+        "version": "v1.0.0"
+    },
+    "react/dns": {
+        "version": "v1.2.0"
+    },
+    "react/event-loop": {
+        "version": "v1.1.0"
+    },
+    "react/promise": {
+        "version": "v2.7.1"
+    },
+    "react/promise-timer": {
+        "version": "v1.5.1"
+    },
+    "react/socket": {
+        "version": "v1.3.0"
+    },
+    "react/stream": {
+        "version": "v1.1.0"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
@@ -140,6 +173,9 @@
         "files": [
             "./config/packages/sensio_framework_extra.yaml"
         ]
+    },
+    "spatie/macroable": {
+        "version": "1.0.0"
     },
     "symfony/asset": {
         "version": "v4.3.3"
@@ -301,6 +337,9 @@
     "symfony/polyfill-php73": {
         "version": "v1.11.0"
     },
+    "symfony/process": {
+        "version": "v4.3.3"
+    },
     "symfony/profiler-pack": {
         "version": "v1.0.4"
     },
@@ -405,11 +444,26 @@
             "./config/routes/dev/web_profiler.yaml"
         ]
     },
+    "symfony/web-server-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "dae9b39fd6717970be7601101ce5aa960bf53d9a"
+        }
+    },
     "symfony/yaml": {
         "version": "v4.3.3"
     },
+    "tightenco/collect": {
+        "version": "v5.8.32"
+    },
     "twig/twig": {
         "version": "v2.11.3"
+    },
+    "twilio/sdk": {
+        "version": "5.34.3"
     },
     "zendframework/zend-code": {
         "version": "3.3.1"

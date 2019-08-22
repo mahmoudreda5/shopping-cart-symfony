@@ -72,6 +72,11 @@ abstract class CartFactory implements CartFactoryInterface{
      * {@inheritdoc}
      */
     public function instantiateCart(string $cartType): CartInterface{
+        if(!$this->user) {
+            $this->cart = null;
+            return new Cart();
+        }
+
         //instantiateCart //factory method design pattern
         //if user has cart retrieve it from DB, else create one
         //we have cartRepository instance, so it will poly. get the right card
@@ -236,6 +241,14 @@ abstract class CartFactory implements CartFactoryInterface{
      */
     public function getFactoryCart(){
         return $this->cart;
+    }
+
+    public function getUser(){
+        return $this->user;
+    }
+
+    public function setUser($user){
+        return $this->user = $user;
     }
 
 }

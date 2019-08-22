@@ -48,6 +48,11 @@ class User implements UserInterface
      */
     private $carts;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $phone;
+
     public function __construct()
     {
         $this->carts = new ArrayCollection();
@@ -170,6 +175,18 @@ class User implements UserInterface
                 $cart->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(string $phone): self
+    {
+        $this->phone = $phone;
 
         return $this;
     }

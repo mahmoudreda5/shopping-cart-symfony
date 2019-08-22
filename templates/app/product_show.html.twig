@@ -53,17 +53,28 @@
         
             <hr>
 
-            {% if productAddedToWishlistCart %}
-            <span class="btn btn-primary"> <i class="fa fa-shopping-cart"></i> Product Added To Wishlist </span>            
-            {% else %}
-            <a href="{{ path('wishlist_cart_add_item', {id: product.id}) }}" class="btn  btn-primary"> <i class="fa fa-shopping-cart"></i> Add to Wishlist </a>
+            {% if is_granted('IS_AUTHENTICATED_FULLY')  %}
+            
+                {% if productAddedToWishlistCart %}
+                    <span class="btn btn-primary"> <i class="fa fa-shopping-cart"></i> Product Added To Wishlist </span>            
+                {% else %}
+                    <a href="{{ path('wishlist_cart_add_item', {id: product.id}) }}" class="btn  btn-primary"> <i class="fa fa-shopping-cart"></i> Add to Wishlist </a>
+                {% endif %}
+            
             {% endif %}
+            
 
-            {% if productAddedToOrderCart %}
-            <span class="btn btn-outline-primary"> <i class="fa fa-shopping-cart"></i> Product Added To Cart </span>            
-            {% else %}
-            <a href="{{ path('order_cart_add_item', {id: product.id}) }}" class="btn  btn-outline-primary"> <i class="fa fa-shopping-cart"></i> Add to cart </a>
+            {% if is_granted('IS_AUTHENTICATED_FULLY')  %}
+            
+                {% if productAddedToOrderCart %}
+                    <span class="btn btn-outline-primary"> <i class="fa fa-shopping-cart"></i> Product Added To Cart </span>            
+                {% else %}
+                    <a href="{{ path('order_cart_add_item', {id: product.id}) }}" class="btn  btn-outline-primary"> <i class="fa fa-shopping-cart"></i> Add to cart </a>
+                {% endif %}
+                
             {% endif %}
+            
+            
             
             {# <a href="{{ path('cart.addItem', {id: product.id}) }}" class="btn  btn-outline-primary"> <i class="fas fa-shopping-cart"></i> Add to cart </a> #}
         </article> <!-- card-body.// -->

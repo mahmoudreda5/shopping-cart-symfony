@@ -1,5 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/intlTelInput.css') }}">
+{% endblock %}
+
 {% block title %}Register{% endblock %}
 
 {% block body %}
@@ -8,10 +12,54 @@
     {{ form_start(registrationForm) }}
 
         {{ form_row(registrationForm.name) }}
+        {{ form_row(registrationForm.phone) }}
         {{ form_row(registrationForm.email) }}
         {{ form_row(registrationForm.password) }}
         {# {{ form_row(registrationForm.agreeTerms) }} #}
 
-        <button class="btn btn-primary float-right">Register</button>
+        <button id="register" class="btn btn-primary float-right">Register</button>
     {{ form_end(registrationForm) }}
 {% endblock %}
+
+
+ {% block javascripts %}
+
+    <script src="{{ asset('js/intlTelInput.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            
+            var input = document.querySelector("#registration_form_phone");
+            // var iti = window.intlTelInput(input);
+            var iti = intlTelInput(input, {
+            initialCountry: "us",
+            separateDialCode: true,
+            // hiddenInput: "full",
+            // geoIpLookup: function(success, failure) {
+            //         $.get("https://ipinfo.io", function() {}, "jsonp").always(function(resp) {
+            //         var countryCode = (resp && resp.country) ? resp.country : "";
+            //         success(countryCode);
+            //         });
+            //     },
+            });
+
+            
+
+            $("#registration_form_phone").val("");
+            // iti.setCountry("us");
+
+
+
+            $("form").on("submit", function(){
+                var countryData = iti.getSelectedCountryData();
+                // if(!countryData.dialCode) countryData.dialCode = 1;  //america
+                $("#registration_form_phone").val(countryData.dialCode + $("#registration_form_phone").val());
+                var phone = $("#registration_form_phone").val();
+                // alert(countryData.dialCode);
+                // var number = iti.getNumber(intlTelInputUtils.numberFormat.E164);
+                // alert(phone);
+            });
+        });
+    </script>
+
+
+ {% endblock %}

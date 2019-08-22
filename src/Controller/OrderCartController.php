@@ -9,6 +9,10 @@ use App\Entity\Product;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
+use Twilio\Rest\Client;
+use Twilio\TwiML\MessagingResponse;
+use Psr\Log\LoggerInterface;
+
 /**
  * @Route("/order-cart", name="order_cart_")
  */
@@ -34,11 +38,23 @@ class OrderCartController extends AbstractController
     /**
      * @Route("/add-item/{id}", name="add_item")
      */
-    public function addCartItem(Product $product, OrderCartFactory $orderCartFactory){
-
+    public function addCartItem(Request $request, Product $product, OrderCartFactory $orderCartFactory){
         //add product to authenticated user OrderCart
         $orderCartFactory->addProduct($product);
 
+        //notify user
+        //twilio object with credintials
+        $sid    = "AC96ca1aa7af4dee699842eef49be9c62a";
+        $token  = "4d6651529141b63bcac57d087c2a4eef";
+        $twilio = new Client($sid, $token);
+        $message = $twilio->messages
+            ->create("whatsapp:+" . $this->getUser()->getPhone() /*"whatsapp:+201152467173"*/, // to
+                array(
+                    "from" => /*"whatsapp:+" . $this->getUser()->getPhone()*/ "whatsapp:+14155238886",
+                    "body" => "You just added " . $product->getName() . "to your shopping cart",
+                    "mediaurl" =>  $request->getUriForPath('/uploads/' . $product->getImage())
+                )
+        );
         return $this->redirectToRoute('app_show_product', ["id" => $product->getId()]);
     }
 
@@ -76,5 +92,24 @@ class OrderCartController extends AbstractController
         }
         return new Response();
     }
+
+    // protected function sendWhatsappMessageOrMedia($twilio, $request, $message, $mediaUrl = null){
+    //     $message = $twilio->messages
+    //         ->create($request->request->all()["From"] /*"whatsapp:+201152467173"*/, // to
+    //             $mediaUrl ? 
+    //             array(
+    //                 "from" => $request->request->all()["To"] /*"whatsapp:+14155238886"*/,
+    //                 "body" => $message,
+    //                 "mediaurl" =>  $mediaUrl
+    //             )
+    //             :
+    //             array(
+    //                 "from" => $request->request->all()["To"] /*"whatsapp:+14155238886"*/,
+    //                 "body" => $message,
+    //             )
+    //     );
+
+    //     return $message;
+    // }
 
 }
