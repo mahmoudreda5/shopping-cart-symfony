@@ -60,11 +60,12 @@ class WebhookController extends AbstractController
         for($i = 0; $i < count($products); $i++){
 
             $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-                                    "product_id: " . $products[$i]->getId() . "\n".
-                                    "name: " . $products[$i]->getName() . "\n" . 
-                                    "price: " . $products[$i]->getPrice() . "EGP\n" .
-                                    "description: " . substr($products[$i]->getDescription(), 0, 20) . " ... \n" .
-                                    "see " .  $request->getScheme() . 's://' . $request->getHttpHost() . $request->getBasePath() . "/show/product/" . $products[$i]->getId(), 
+                                    "Product Id: " . $products[$i]->getId() . "\n".
+                                    "Name: " . $products[$i]->getName() . "\n" . 
+                                    "Price: " . $products[$i]->getPrice() . " EGP\n" .
+                                    "Description: " . substr($products[$i]->getDescription(), 0, 20) . " ... \n" .
+                                    // "see " .  $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/show/product/" . $products[$i]->getId(), 
+                                    "See " .  $request->getSchemeAndHttpHost() . "/show/product/" . $products[$i]->getId(),                                     
                                     $request->getUriForPath('/uploads/' . $products[$i]->getImage()));
 
             sleep(1);
@@ -96,7 +97,7 @@ class WebhookController extends AbstractController
             $items = $orderCartFactory->cartProducts();
 
             // $image = $assetsManager->getUrl("public/uploads" . $items[0]["product"]["image"]);
-            // $image = $request->getScheme() . 's://' . $request->getHttpHost() . $request->getBasePath() . 
+            // $image = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . 
             //     $assetsManager->getUrl("public/uploads/" . $items[0]["product"]["image"]);
             // $image = $request->getUriForPath('/uploads/' . $items[0]["product"]["image"]);
             // var_dump($image);
@@ -104,11 +105,12 @@ class WebhookController extends AbstractController
 
             foreach($items as $item){
                 $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-                        "product_id: " . $item["product"]["id"] . "\n".
-                        "name: " . $item["product"]["name"] . "\n" . 
-                        "price: " . $item["product"]["price"] . " EGP\n" .
-                        "description: " . substr($item["product"]["description"], 0, 20) . " ... \n" .
-                        "see " .  $request->getScheme() . 's://' . $request->getHttpHost() . $request->getBasePath() . "/show/product/" . $item["product"]["id"],
+                        "Product Id: " . $item["product"]["id"] . "\n".
+                        "Name: " . $item["product"]["name"] . "\n" . 
+                        "Price: " . $item["product"]["price"] . " EGP\n" .
+                        "Description: " . substr($item["product"]["description"], 0, 20) . " ... \n" .
+                        // "see " .  $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/show/product/" . $item["product"]["id"],
+                        "See " .  $request->getSchemeAndHttpHost() . "/show/product/" . $item["product"]["id"],                        
                         $request->getUriForPath('/uploads/' . $item["product"]["image"]));
 
                 sleep(1);
@@ -125,13 +127,13 @@ class WebhookController extends AbstractController
             }
 
             if(!$items || count($items) == 0){
-                $message = $this->sendWhatsappMessageOrMedia($twilio, $request, "you Cart is empty!, send a product_id to add it to your shopping cart.");
+                $message = $this->sendWhatsappMessageOrMedia($twilio, $request, "Your cart is empty!, send a 'Product Id' to add it to your shopping cart.");
             }
         }else{
             //return url to register first
             $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-                "you need to register at shopping cart first! \n" . 
-                "go " . $request->getScheme() . 's://' . $request->getHttpHost() . $request->getBasePath() . "/register");
+                "You need to register at shopping cart first! \n" . 
+                "Go " . $request->getSchemeAndHttpHost() . "/register");
         }
 
         
@@ -143,7 +145,7 @@ class WebhookController extends AbstractController
             //add the product to users cart
 
             //auth user with phone number
-            $phone = substr($request->request->all()["From"], strlen("whatsapp:+")  /* egypt only */);
+            $phone = substr($request->request->all()["From"], strlen("whatsapp:+"));
             // $phone = substr("whatsapp:+201152467173", strlen("whatsapp:+"));
             $user = $userRepository->findOneBy(["phone" => $phone]);
 
@@ -156,21 +158,21 @@ class WebhookController extends AbstractController
                 if(!$orderCartFactory->hasProduct($product)){
                     $orderCartFactory->addProduct($product);
 
-                    $message = $this->sendWhatsappMessageOrMedia($twilio, $request, "you just added " .  $product->getName() . "to your shopping cart!");
+                    $message = $this->sendWhatsappMessageOrMedia($twilio, $request, "You just added \"" .  $product->getName() . "\" to your shopping cart!");
                 }else{
-                    $message = $this->sendWhatsappMessageOrMedia($twilio, $request, "product " . $product->getName()  . " is already in shopping your cart");
+                    $message = $this->sendWhatsappMessageOrMedia($twilio, $request, "Product \"" . $product->getName()  . "\" is already in shopping your cart");
                 }
             }else {
                 $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-                "you need to register at shopping cart first! \n" . 
-                "go " . $request->getScheme() . 's://' . $request->getHttpHost() . $request->getBasePath() . "/register");
+                "You need to register at shopping cart first! \n" . 
+                "Go " . $request->getSchemeAndHttpHost() . "/register");
             }
 
 
         }else{
             $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-            "you said " .  $request->request->all()["Body"] . ",  sorry i didn't understand you!"
-            . "\n\nsend: \n'List' for listing all products \n'Cart' for your cart products \n'product_id' to add it to cart..");
+            "You said " .  $request->request->all()["Body"] . ",  sorry i didn't understand you!"
+            . "\n\nsend: \n'List' for listing all products \n'Cart' for your cart products \n'Product Id' to add it to cart..");
         }
 
         
