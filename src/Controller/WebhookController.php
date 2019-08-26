@@ -6,24 +6,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Twilio\Rest\Client;
-use Twilio\TwiML\MessagingResponse;
 use Psr\Log\LoggerInterface;
+
 use App\Entity\Product;
 use App\Entity\User;
 use App\Entity\OrderCart;
 
 use App\Repository\ProductRepository;
-use App\Repository\UserRepository;
 use App\ComponentInterface\Factory\OrderCartFactory;
 
-
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
-
-use Symfony\Component\Asset\Packages;
-
-
+use App\BotChannel\BotChannel;
+use App\BotChannel\WhatsappInterface;
 
 
 
@@ -32,230 +25,92 @@ class WebhookController extends AbstractController
     /**
      * @Route("/webhook", name="webhook")
      */
-    public function index(Request $request, ProductRepository $productRepository, 
-                    UserRepository $userRepository, LoggerInterface $logger, OrderCartFactory $orderCartFactory, Packages $assetsManager){
+    public function index(Request $request, ProductRepository $productRepository, LoggerInterface $logger, 
+                            OrderCartFactory $orderCartFactory, BotChannel $botChannel){
 
 
-    ////////////////////////////////////////////////////////
-        // $logger->info(json_encode($request->request->all()));
-        // // $logger->info("hello");
-        // return new Response();
-    ////////////////////////////////////////////////////////
-
-    //twilio object with credintials
-    $sid    = "AC96ca1aa7af4dee699842eef49be9c62a";
-    $token  = "4d6651529141b63bcac57d087c2a4eef";
-    $twilio = new Client($sid, $token);
-
-    $body = $request->request->all()["Body"];
-    // $body = 2;
-
-    if($body == "List" || $body == "list"){
-
-        //get all products
-        $products = $productRepository->findAll();
-
-        //reply with all products, i will take 7 for now
-        // $limit = 7;
-        for($i = 0; $i < count($products); $i++){
-
-            $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-                                    "Product Id: " . $products[$i]->getId() . "\n".
-                                    "Name: " . $products[$i]->getName() . "\n" . 
-                                    "Price: " . $products[$i]->getPrice() . " EGP\n" .
-                                    "Description: " . substr($products[$i]->getDescription(), 0, 20) . " ... \n" .
-                                    // "see " .  $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/show/product/" . $products[$i]->getId(), 
-                                    "See " .  $request->getSchemeAndHttpHost() . "/show/product/" . $products[$i]->getId(),                                     
-                                    $request->getUriForPath('/uploads/' . $products[$i]->getImage()));
-
-            sleep(1);
-
-            // $message = $twilio->messages
-            //     ->create($request->request->all()["From"] /*"whatsapp:+201152467173"*/, // to
-            //         array(
-            //             "from" => $request->request->all()["To"] /*"whatsapp:+14155238886"*/,
-            //             "body" => $products[$i]->getName(),
-            //             "mediaurl" =>  $request->getUriForPath('/uploads/' . $products[$i]->getImage())
-            //         )
-            // );
-        }
-
-    }else if($body == "Cart" || $body == "cart"){
-
-        //auth user with phone number
-        $phone = substr($request->request->all()["From"], strlen("whatsapp:+"));
-        // $phone = substr("whatsapp:+201152467173", strlen("whatsapp:+"));
-        $user = $userRepository->findOneBy(["phone" => $phone]);
-
-        //if he is a user on my shopping cart great system
-        if($user){
-            //user's factory since it's not looged in
-            $orderCartFactory->setUser($user);
-            $orderCartFactory->instantiateCart(OrderCart::class);  //important to instatiate Cart with your type
-
-            //get authenticated user orderCart products
-            $items = $orderCartFactory->cartProducts();
-
-            // $image = $assetsManager->getUrl("public/uploads" . $items[0]["product"]["image"]);
-            // $image = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . 
-            //     $assetsManager->getUrl("public/uploads/" . $items[0]["product"]["image"]);
-            // $image = $request->getUriForPath('/uploads/' . $items[0]["product"]["image"]);
-            // var_dump($image);
+        ////////////////////////////////////////////////////////
+            // $logger->info(json_encode($request->request->all()));
             // return new Response();
+        ////////////////////////////////////////////////////////
 
-            foreach($items as $item){
-                $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-                        "Product Id: " . $item["product"]["id"] . "\n".
-                        "Name: " . $item["product"]["name"] . "\n" . 
-                        "Price: " . $item["product"]["price"] . " EGP\n" .
-                        "Description: " . substr($item["product"]["description"], 0, 20) . " ... \n" .
-                        // "see " .  $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/show/product/" . $item["product"]["id"],
-                        "See " .  $request->getSchemeAndHttpHost() . "/show/product/" . $item["product"]["id"],                        
-                        $request->getUriForPath('/uploads/' . $item["product"]["image"]));
+        $body = $request->request->all()["Body"];
+        // $body = json_decode($request->getContent())->Body;
 
-                sleep(1);
-                // $message = $twilio->messages
-                //         ->create($request->request->all()["From"] /*"whatsapp:+201152467173"*/, // to
-                //             array(
-                //                 "from" => $request->request->all()["To"] /*"whatsapp:+14155238886"*/,
-                //                 "body" => $item["product"]["name"],
-                //                 "mediaurl" =>  $request->getUriForPath('/uploads/' . $item["product"]["image"])
-                //             )
-                //     );
+        if($body == "List" || $body == "list"){
 
-                // $logger->info($message);
-            }
+            //get all products
+            $products = $productRepository->findAll();
 
-            if(!$items || count($items) == 0){
-                $message = $this->sendWhatsappMessageOrMedia($twilio, $request, "Your cart is empty!, send a 'Product Id' to add it to your shopping cart.");
-            }
-        }else{
-            //return url to register first
-            $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-                "You need to register at shopping cart first! \n" . 
-                "Go " . $request->getSchemeAndHttpHost() . "/register");
-        }
+            //send whatsapp channel list
+            $message = $botChannel->list(WhatsappInterface::class, $request, $products);
 
-        
-    }else{
+        }else if($body == "Cart" || $body == "cart"){
 
-        //get all products
-        $product = $productRepository->findOneBy(["id" => $body]);
-        if($product){
-            //add the product to users cart
-
-            //auth user with phone number
-            $phone = substr($request->request->all()["From"], strlen("whatsapp:+"));
-            // $phone = substr("whatsapp:+201152467173", strlen("whatsapp:+"));
-            $user = $userRepository->findOneBy(["phone" => $phone]);
+            $user = $botChannel->findUser(WhatsappInterface::class, $request);
 
             //if he is a user on my shopping cart great system
             if($user){
-                //user's factory since it's not looged in
-                $orderCartFactory->setUser($user);
-                $orderCartFactory->instantiateCart(OrderCart::class);  //important to instatiate Cart with your type
+                //user's factory mannually assigned since it's not looged in
+                $orderCartFactory->setUser($user, OrderCart::class);
 
-                if(!$orderCartFactory->hasProduct($product)){
-                    $orderCartFactory->addProduct($product);
+                //get authenticated user orderCart products
+                $items = $orderCartFactory->cartProducts();
 
-                    $message = $this->sendWhatsappMessageOrMedia($twilio, $request, "You just added \"" .  $product->getName() . "\" to your shopping cart!");
+                if($items && count($items) > 0){
+                    //send whatsapp channel cart list
+                    $message = $botChannel->cart(WhatsappInterface::class, $request, $items);
                 }else{
-                    $message = $this->sendWhatsappMessageOrMedia($twilio, $request, "Product \"" . $product->getName()  . "\" is already in shopping your cart");
+                    $message = $botChannel->message(WhatsappInterface::class, $request, "Your cart is empty!, send a 'Product Id' to add it to your shopping cart.");
                 }
-            }else {
-                $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-                "You need to register at shopping cart first! \n" . 
-                "Go " . $request->getSchemeAndHttpHost() . "/register");
+            }else{
+                //return url to register first
+                $message = $botChannel->message(WhatsappInterface::class, $request, 
+                    "You need to register at shopping cart first! \n" . 
+                    "Go " . $request->getSchemeAndHttpHost() . "/register");
             }
 
-
+            
         }else{
-            $message = $this->sendWhatsappMessageOrMedia($twilio, $request, 
-            "You said " .  $request->request->all()["Body"] . ",  sorry i didn't understand you!"
-            . "\n\nsend: \n'List' for listing all products \n'Cart' for your cart products \n'Product Id' to add it to cart..");
+            //is it a product!
+            $product = $productRepository->findOneBy(["id" => $body]);
+            if($product){
+                //add the product to users cart
+
+                //get whatsapp user
+                $user = $botChannel->findUser(WhatsappInterface::class, $request);
+
+                //if he is a user on my shopping cart great system
+                if($user){
+                    //user's factory mannually assigned since it's not looged in
+                    $orderCartFactory->setUser($user, OrderCart::class);
+
+                    if(!$orderCartFactory->hasProduct($product)){
+                        $orderCartFactory->addProduct($product);
+
+                        $message = $botChannel->message(WhatsappInterface::class, $request, "You just added \"" .  $product->getName() . "\" to your shopping cart!");
+                    }else{
+                        $message = $botChannel->message(WhatsappInterface::class, $request, "Product \"" . $product->getName()  . "\" is already in shopping your cart");
+                    }
+                }else {
+                    $message = $botChannel->message(WhatsappInterface::class, $request, 
+                        "You need to register at shopping cart first! \n" . 
+                        "Go " . $request->getSchemeAndHttpHost() . "/register");
+                }
+
+
+            }else{
+                $message = $botChannel->message(WhatsappInterface::class, $request, 
+                    "You said " .  $request->request->all()["Body"] . ",  sorry i didn't understand you!"
+                    . "\n\nsend: \n'List' for listing all products \n'Cart' for your cart products \n'Product Id' to add it to cart..");
+            }
+
+            
         }
-
         
-    }
+
+        return new Response();
     
-
-    
-
-    // var_dump($items);
-    return new Response();
-    
-        
-
-        ///////////////////////////////////////////////////////
-
-
-        // $logger->info($request->request->all()["From"]);
-    // return new Response(json_encode(["text" => ["body" => "hey mahmoud"]]), 200/*, ["encoding" => "UTF-8", "accept" => "application/json"]*/);
-    // return new Response();
-
-    // return new Response(json_encode([
-    //     "To" => $request->request->all()["From"],
-    //     "From" => $request->request->all()["To"],
-    //     "Body" => "hello mahmoud!, you just said " . $request->request->all()["Body"]
-    // ]));
-
-    // $products = $productRepository->findAll();
-    
-        
-        // Find your Account Sid and Auth Token at twilio.com/console
-        // DANGER! This is insecure. See http://twil.io/secure
-        // $sid    = "AC96ca1aa7af4dee699842eef49be9c62a";
-        // $token  = "4d6651529141b63bcac57d087c2a4eef";
-        // $twilio = new Client($sid, $token);
-
-        // $limit = 7;
-        // for($i = 0; $i < $limit; $i++){
-        //     $message = $twilio->messages
-        //                 ->create($request->request->all()["From"], // to
-        //                         array(
-        //                             "from" => $request->request->all()["To"],
-        //                             "body" => "Hello there! you just said " . $request->request->all()["Body"],
-        //                             "mediaurl" => "https://statici.behindthevoiceactors.com/behindthevoiceactors/_img/chars/conan-edogawa-case-closed-countdown-to-heaven-40.8.jpg"
-        //                         )
-        //                 );
-        // }
-        
-        // $message = $twilio->messages
-        //                 ->create("whatsapp:+201152467173", // to
-        //                         array(
-        //                             "from" => "whatsapp:+14155238886",
-        //                             "body" => "Hello there!",
-        //                             "mediaurl" => "https://statici.behindthevoiceactors.com/behindthevoiceactors/_img/chars/conan-edogawa-case-closed-countdown-to-heaven-40.8.jpg"
-        //                         )
-        //                 );
-
-        // echo "<pre>";
-        // var_dump($products);
-        // echo "</pre>";
-        // return new Response();
-
-
-        // $response = new MessagingResponse();
-        // $response->message('This is message 1 of 2.');
-        // $response->message('This is message 2 of 2.');
-
-        // return $response;
-
-        // $fulfillment = array(
-        //     "fulfillmentText" => "hello mahmoud"
-        // );
-
-        // $fulfillment =  json_encode($fulfillment);
-
-        // echo $fulfillment; exit;
-        // return new Response($fulfillment);
-
-        
-
-
-        // return $this->render('webhook/index.html.twig', [
-        //     'controller_name' => 'WebhookController',
-        // ]);
     }
 
     // protected function attemptUser($user){
@@ -272,25 +127,6 @@ class WebhookController extends AbstractController
     //     // $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
 
     // }
-
-    protected function sendWhatsappMessageOrMedia($twilio, $request, $message, $mediaUrl = null){
-        $message = $twilio->messages
-            ->create($request->request->all()["From"] /*"whatsapp:+201152467173"*/, // to
-                $mediaUrl ? 
-                array(
-                    "from" => $request->request->all()["To"] /*"whatsapp:+14155238886"*/,
-                    "body" => $message,
-                    "mediaurl" =>  $mediaUrl
-                )
-                :
-                array(
-                    "from" => $request->request->all()["To"] /*"whatsapp:+14155238886"*/,
-                    "body" => $message,
-                )
-        );
-
-        return $message;
-    }
 
     /**
      * @Route("/test", name="test")

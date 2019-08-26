@@ -67,6 +67,29 @@ class OrderCartItemRepository extends ServiceEntityRepository implements CartIte
             ->getArrayResult()
         ;
 
+        // $sub =  $this->createQueryBuilder('any')
+        //     ->select('c')
+        //     ->from("App\Entity\CartItem", 'c')
+        //     // ->innerJoin('c.cart', 'cart')
+        //     ->where('c.cart_id = :cart_id')
+        //     ->setParameter('cart_id', $cart_id)
+        //     ->getQuery()
+        //     ->getResult()
+        // ;
+
+        // return $this->createQueryBuilder('c')
+        //     // ->innerJoin('c.product', 'p')
+        //     // ->innerJoin('c.cart', 'cart')
+        //     ->select('p')
+        //     ->from('App\Entity\Product', 'p')
+        //     ->where('p.id = :id')
+        //     ->setParameter('id', 7)
+        //     // ->andWhere('cart.id = :id')
+        //     // ->setParameter('id', $cart_id)
+        //     ->getQuery()
+        //     ->getResult()
+        // ;
+
     }
 
     /**

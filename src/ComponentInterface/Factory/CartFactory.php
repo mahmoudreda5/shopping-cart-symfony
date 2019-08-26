@@ -127,16 +127,18 @@ abstract class CartFactory implements CartFactoryInterface{
         //to add product, first check CartItem
         if(!$cartItem) $cartItem = new CartItem();  //use default cartItem
 
-        $cartItem->setProduct($product);  //product relashion established
-        $this->cart->addItem($cartItem);  //cart relashion established, we can $orderCartItem->setCart($this->cart) too but this is more readable
+        if(!$this->hasProduct($product)){
+            $cartItem->setProduct($product);  //product relashion established
+            $this->cart->addItem($cartItem);  //cart relashion established, we can $orderCartItem->setCart($this->cart) too but this is more readable
 
-        $this->cart->handleInnerStuffBeforePersist();  //update cart items number and other stuff dependent on cart type, need to be persisted
+            $this->cart->handleInnerStuffBeforePersist();  //update cart items number and other stuff dependent on cart type, need to be persisted
 
-        //persist changes to DB
-        $this->entityManager->persist($cartItem);
-        $this->entityManager->persist($this->cart);
+            //persist changes to DB
+            $this->entityManager->persist($cartItem);
+            $this->entityManager->persist($this->cart);
 
-        $this->entityManager->flush();
+            $this->entityManager->flush();
+        }
 
         return $this->cart;
     }
@@ -247,8 +249,15 @@ abstract class CartFactory implements CartFactoryInterface{
         return $this->user;
     }
 
-    public function setUser($user){
-        return $this->user = $user;
+    //user mannually assigned so we need to instantiate it's cart
+    public function setUser($user, string $cartType){
+
+        $this->user = $user;
+
+        //instantiate user cart
+        $this->instantiateCart($cartType);
+
+        return $this->user;
     }
 
 }

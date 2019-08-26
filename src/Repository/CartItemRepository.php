@@ -65,6 +65,20 @@ class CartItemRepository extends ServiceEntityRepository implements CartItemRepo
             ->getArrayResult()
         ;
 
+
+        // return $this->createQueryBuilder('c')
+        //     // ->innerJoin('c.product', 'p')
+        //     // ->innerJoin('c.cart', 'cart')
+        //     ->selectelect('p.*')
+        //     ->from('App/Entity/Product', 'p')
+        //     ->where('p.id = :id')
+        //     ->setParameter('id', 7)
+        //     // ->andWhere('cart.id = :id')
+        //     // ->setParameter('id', $cart_id)
+        //     ->getQuery()
+        //     ->getResult()
+        // ;
+
     }
 
     /**
