@@ -13,6 +13,9 @@ use Twilio\Rest\Client;
 use Twilio\TwiML\MessagingResponse;
 use Psr\Log\LoggerInterface;
 
+use App\BotChannel\BotChannel;
+use App\BotChannel\WhatsappInterface;
+
 /**
  * @Route("/order-cart", name="order_cart_")
  */
@@ -38,23 +41,27 @@ class OrderCartController extends AbstractController
     /**
      * @Route("/add-item/{id}", name="add_item")
      */
-    public function addCartItem(Request $request, Product $product, OrderCartFactory $orderCartFactory){
-        //add product to authenticated user OrderCart
-        $orderCartFactory->addProduct($product);
+    public function addCartItem(Request $request, Product $product, OrderCartFactory $orderCartFactory, BotChannel $botChannel){
 
         //notify user
-        //twilio object with credintials
-        $sid    = "AC96ca1aa7af4dee699842eef49be9c62a";
-        $token  = "4d6651529141b63bcac57d087c2a4eef";
-        $twilio = new Client($sid, $token);
-        $message = $twilio->messages
-            ->create("whatsapp:+" . $this->getUser()->getPhone() /*"whatsapp:+201152467173"*/, // to
-                array(
-                    "from" => /*"whatsapp:+" . $this->getUser()->getPhone()*/ "whatsapp:+14155238886",
-                    "body" => "You just added " . $product->getName() . "to your shopping cart",
-                    "mediaurl" =>  $request->getUriForPath('/uploads/' . $product->getImage())
-                )
-        );
+        if(!$orderCartFactory->hasProduct($product)){
+            //add product to authenticated user OrderCart
+            $orderCartFactory->addProduct($product);
+
+            //set From and To request params mannually
+            $botNumber = "whatsapp:+14155238886";
+            $request->request->add(['To' => $botNumber]);
+            $request->request->add(['From' => "whatsapp:+" . $orderCartFactory->getUser()->getPhone()]);
+
+            // var_dump($request->request->all()["From"]); 
+            // var_dump($request->request->all()["To"]);             
+            // die;
+
+            $message = $botChannel->message(WhatsappInterface::class, $request, "You just added \"" .  $product->getName() . "\" to your shopping cart!");
+        }else{
+            $message = $botChannel->message(WhatsappInterface::class, $request, "Product \"" . $product->getName()  . "\" is already in shopping your cart");
+        }
+
         return $this->redirectToRoute('app_show_product', ["id" => $product->getId()]);
     }
 

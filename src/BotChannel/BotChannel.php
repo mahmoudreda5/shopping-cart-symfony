@@ -14,6 +14,7 @@ use Twilio\TwiML\MessagingResponse;
 use Symfony\Component\Dotenv\Dotenv;
 use Psr\Log\LoggerInterface;
 
+use Symfony\Component\Security\Core\Security;
 
 
 class BotChannel implements BotChannelInterface, WhatsappInterface{
@@ -156,16 +157,16 @@ class BotChannel implements BotChannelInterface, WhatsappInterface{
 
     private function sendWhatsappMessageOrMedia($twilio, $request, $message, $mediaUrl = null){
         $message = $twilio->messages
-            ->create($request->request->all()["From"] /*"whatsapp:+201152467173"*/, // to
+            ->create($request->request->all()["From"] /*? $request->request->all()["From"] : "whatsapp:+14155238886"*/, // to
                 $mediaUrl ? 
                 array(
-                    "from" => $request->request->all()["To"] /*"whatsapp:+14155238886"*/,
+                    "from" => $request->request->all()["To"] /*? $request->request->all()["To"] : "whatsapp:+201152467173"*/,
                     "body" => $message,
                     "mediaurl" =>  $mediaUrl
                 )
                 :
                 array(
-                    "from" => $request->request->all()["To"] /*"whatsapp:+14155238886"*/,
+                    "from" => $request->request->all()["To"],
                     "body" => $message,
                 )
         );
