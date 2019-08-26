@@ -40,7 +40,7 @@ class MessengerWebhookController extends AbstractController
             // $logger->info(json_encode($input));
             // $logger->info($request->getContent());
             // $logger->info("hello");
-            // return new Response();
+            return new Response("hello");
         ////////////////////////////////////////////////////////
 
         // return $this->verifyWebhook($request);
