@@ -43,7 +43,7 @@ class MessengerWebhookController extends AbstractController
             // return new Response();
         ////////////////////////////////////////////////////////
 
-        return $this->verifyWebhook($request);
+        // return $this->verifyWebhook($request);
 
         DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
 
@@ -91,6 +91,10 @@ class MessengerWebhookController extends AbstractController
                 ->addImageAspectRatio(GenericTemplate::RATIO_SQUARE)
                 ->addElements($elements)
             );
+
+            if(count($elements) > 0){
+                $bot->reply('Hello yourself.');
+            }
 
             // for($i = 0; $i < /*count($products)*/ 4; $i++){
             //     $elements[] = Element::create($products[$i]->getName())
