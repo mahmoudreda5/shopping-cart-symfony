@@ -40,10 +40,10 @@ class MessengerWebhookController extends AbstractController
             // $logger->info(json_encode($input));
             // $logger->info($request->getContent());
             // $logger->info("hello");
-            return new Response("hello");
+            // return new Response();
         ////////////////////////////////////////////////////////
 
-        // return $this->verifyWebhook($request);
+        return $this->verifyWebhook($request);
 
         DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
 
