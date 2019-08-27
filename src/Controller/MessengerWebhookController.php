@@ -17,16 +17,6 @@ use App\Entity\Product;
 use App\Repository\ProductRepository;
 
 
-use BotMan\BotMan\BotMan;
-use BotMan\BotMan\BotManFactory;
-use BotMan\BotMan\Drivers\DriverManager;
-
-use BotMan\Drivers\Facebook\Extensions\Element;
-use BotMan\Drivers\Facebook\Extensions\ElementButton;
-use BotMan\Drivers\Facebook\Extensions\GenericTemplate;
-use BotMan\Drivers\Facebook\Extensions\ListTemplate;
-
-
 
 class MessengerWebhookController extends AbstractController
 {
@@ -37,30 +27,20 @@ class MessengerWebhookController extends AbstractController
     {
         ////////////////////////////////////////////////////////
             // $input = json_decode(file_get_contents('php://input'), true);
-            // $logger->info(json_encode($input));
-            // $logger->info($request->getContent());
-            // $logger->info("hello");
             // return new Response();
         ////////////////////////////////////////////////////////
 
         // return $this->verifyWebhook($request);
 
-        DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
-
-        $config = [
-            'facebook' => [
-                'token' => 'EAASJ9DarqEYBAF62ZCGTaT1llZCpbsNPqBOJFADuA1NtfAZApgGvOF8ak847tYfEnhV2B9dmZACDVJEqezGw41Sf3nayZBc71wzQPX6v01WsbZAAIjuoweeSQYgJToMShzYdszZBRvfZBCZAZATy9nN9UotJMs9cTDLALbEdrtdyp83gZDZD',
-                // 'app_secret' => 'YOUR-FACEBOOK-APP-SECRET-HERE',
-                'verification'=>'shopping-cart-symfony',
-            ]
-        ];
-
-        // Create an instance
-        $botman = BotManFactory::create($config);
+        
 
         // Give the bot something to listen for.
         $botman->hears('hello there!', function (BotMan $bot) {
             $bot->reply('Hello yourself.');
+        });
+
+        $botman->hears('Order', function (BotMan $bot) {
+            $bot->reply('it\'s working.');
         });
 
         $botman->hears('List', function (BotMan $bot) use ($productRepository, $request, $logger) {
@@ -68,16 +48,12 @@ class MessengerWebhookController extends AbstractController
             $products = $productRepository->findAll();
             $elements = [];
 
-            // $logger->info($request->getSchemeAndHttpHost());
-            // $logger->info($request->getBaseUrl());
-
-
             for($i = 0; $i < count($products); $i++){
                 $elements[] = Element::create($products[$i]->getName())
                         ->subtitle(substr($products[$i]->getDescription(), 0, 27) . " ...")
-                        ->image($request->getUriForPath('/uploads/' . $products[$i]->getImage()))
+                        // ->image($request->getUriForPath('/uploads/' . $products[$i]->getImage()))
                         // ->image($request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/uploads/" . $products[$i]->getImage())
-                        // ->image('https://pbs.twimg.com/profile_images/3677320779/32a3fde04e2a08045966a4cc19926328_400x400.jpeg')
+                        ->image('https://pbs.twimg.com/profile_images/3677320779/32a3fde04e2a08045966a4cc19926328_400x400.jpeg')
                         ->addButton(ElementButton::create('Details')
                             ->url($request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/show/product/" . $products[$i]->getId())
                         )
@@ -92,9 +68,9 @@ class MessengerWebhookController extends AbstractController
                 ->addElements($elements)
             );
 
-            if(count($elements) > 0){
-                $bot->reply('Hello yourself.');
-            }
+            // if(count($elements) > 0){
+            //     $bot->reply('Hello yourself.');
+            // }
 
             // for($i = 0; $i < /*count($products)*/ 4; $i++){
             //     $elements[] = Element::create($products[$i]->getName())

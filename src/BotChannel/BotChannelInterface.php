@@ -14,33 +14,33 @@ interface BotChannelInterface{
     /**
      * list products to specific channel
      *
-     * @param string,Request,Array
+     * @param Request,Array
      * @return mixed
      */
-    public function list(string $channel, Request $request, $products);
+    public function list(Request $request, $products);
 
     /**
      * list cart products to specific channel
      *
-     * @param string,Request,Array
+     * @param Request,Array
      * @return mixed
      */
-    public function cart(string $channel, Request $request, $items);
+    public function cart(Request $request, $items);
 
     /**
      * add product from specific channel
      *
-     * @param string,Request,string
+     * @param Request,string
      * @return mixed
      */
-    public function message(string $channel, Request $request, string $message);
+    public function message(Request $request, string $message);
 
     /**
      * find user of specific channel
      *
-     * @param string,Request
+     * @param Request
      * @return mixed
      */
-    public function findUser(string $channel, Request $request);
+    public function findUser(Request $request);
 
 }

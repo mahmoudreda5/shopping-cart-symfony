@@ -12,35 +12,11 @@ interface WhatsappInterface{
     //whatsapp specific channel contracts
 
     /**
-     * list products to whatsapp channel
-     *
-     * @param Request,Array
-     * @return mixed
-     */
-    public function whatsappList(Request $request, $products);
-
-    /**
-     * list cart products to whatsapp channel
-     *
-     * @param Request,Product
-     * @return mixed
-     */
-    public function whatsappCart(Request $request, $items);
-
-    /**
-     * add product from whatsapp channel
-     *
-     * @param Request,string
-     * @return mixed
-     */
-    public function whatsappMessage(Request $request, string $message);
-
-    /**
-     * find user for whatsapp channel
+     * handle whatsapp channel request
      *
      * @param Request
-     * @return User
+     * @return mixed
      */
-    public function findWhatsappUser(Request $request);
+    public function handleRequest(Request $request);
 
 }

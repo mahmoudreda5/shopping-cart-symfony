@@ -17,6 +17,10 @@ use App\Entity\CartItem;
 use App\ComponentInterface\Cart\WishlistCartInterface;
 use App\Entity\WishlistCart;
 
+use App\ComponentInterface\CustomException\NullUserException;
+use App\ComponentInterface\CustomException\CartHasProduct;
+
+
 /** abstract class that defines basic objects and functionalities (by implementing CartFactoryInterface) for any cart */
 abstract class CartFactory implements CartFactoryInterface{
 
@@ -124,21 +128,25 @@ abstract class CartFactory implements CartFactoryInterface{
      */
     public function addProduct(ProductInterface $product, CartItemInterface $cartItem = null): CartInterface
     {
+        //user may be not logged in, so it may be null
+        if(!$this->user) throw new NullUserException("user not found!");
+        
         //to add product, first check CartItem
         if(!$cartItem) $cartItem = new CartItem();  //use default cartItem
 
-        if(!$this->hasProduct($product)){
-            $cartItem->setProduct($product);  //product relashion established
-            $this->cart->addItem($cartItem);  //cart relashion established, we can $orderCartItem->setCart($this->cart) too but this is more readable
+        if($this->hasProduct($product))
+            throw new CartHasProduct("product exists already!");
 
-            $this->cart->handleInnerStuffBeforePersist();  //update cart items number and other stuff dependent on cart type, need to be persisted
+        $cartItem->setProduct($product);  //product relashion established
+        $this->cart->addItem($cartItem);  //cart relashion established, we can $orderCartItem->setCart($this->cart) too but this is more readable
 
-            //persist changes to DB
-            $this->entityManager->persist($cartItem);
-            $this->entityManager->persist($this->cart);
+        $this->cart->handleInnerStuffBeforePersist();  //update cart items number and other stuff dependent on cart type, need to be persisted
 
-            $this->entityManager->flush();
-        }
+        //persist changes to DB
+        $this->entityManager->persist($cartItem);
+        $this->entityManager->persist($this->cart);
+
+        $this->entityManager->flush();
 
         return $this->cart;
     }
@@ -223,6 +231,9 @@ abstract class CartFactory implements CartFactoryInterface{
      */
     public function cartProducts()
     {
+        //user may be not logged in, so it may be null
+        if(!$this->user) throw new NullUserException("user not found!");
+
         //get products of $this->cart
         return $this->cartItemRepository->findProductsWithCartId($this->cart->getId());
     }

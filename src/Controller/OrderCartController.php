@@ -13,8 +13,10 @@ use Twilio\Rest\Client;
 use Twilio\TwiML\MessagingResponse;
 use Psr\Log\LoggerInterface;
 
-use App\BotChannel\BotChannel;
+use App\BotChannel\WhatsappChannel;
 use App\BotChannel\WhatsappInterface;
+
+use App\ComponentInterface\CustomException\CartHasProduct;
 
 /**
  * @Route("/order-cart", name="order_cart_")
@@ -41,10 +43,11 @@ class OrderCartController extends AbstractController
     /**
      * @Route("/add-item/{id}", name="add_item")
      */
-    public function addCartItem(Request $request, Product $product, OrderCartFactory $orderCartFactory, BotChannel $botChannel){
+    public function addCartItem(Request $request, Product $product, OrderCartFactory $orderCartFactory, WhatsappChannel $whatsappChannel){
 
         //notify user
-        if(!$orderCartFactory->hasProduct($product)){
+        try{
+
             //add product to authenticated user OrderCart
             $orderCartFactory->addProduct($product);
 
@@ -53,13 +56,10 @@ class OrderCartController extends AbstractController
             $request->request->add(['To' => $botNumber]);
             $request->request->add(['From' => "whatsapp:+" . $orderCartFactory->getUser()->getPhone()]);
 
-            // var_dump($request->request->all()["From"]); 
-            // var_dump($request->request->all()["To"]);             
-            // die;
+            $message = $whatsappChannel->message($request, "You just added \"" .  $product->getName() . "\" to your shopping cart!");
 
-            $message = $botChannel->message(WhatsappInterface::class, $request, "You just added \"" .  $product->getName() . "\" to your shopping cart!");
-        }else{
-            $message = $botChannel->message(WhatsappInterface::class, $request, "Product \"" . $product->getName()  . "\" is already in shopping your cart");
+        }catch(CartHasProduct $cartHasProduct){
+            $message = $whatsappChannel->message($request, "Product \"" . $product->getName()  . "\" is already in shopping your cart");
         }
 
         return $this->redirectToRoute('app_show_product', ["id" => $product->getId()]);
