@@ -54,7 +54,7 @@ class MessengerChannel extends BotChannel {
         static::$botman = BotManFactory::create($config);
     }
 
-    public function handleRequest(MessengerRequest $channelRequest){
+    public function handleRequest(ChannelRequest $channelRequest){
 
         try{
             //abstract factory based on whatsapp request action

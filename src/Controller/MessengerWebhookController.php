@@ -5,9 +5,6 @@ namespace App\Controller;
 use App\BotChannel\ChannelFactory;
 use App\BotChannel\ChannelRequest\MessengerRequest;
 use App\BotChannel\MessengerChannel;
-use BotMan\BotMan\BotMan;
-use BotMan\BotMan\BotManFactory;
-use BotMan\BotMan\Drivers\DriverManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 

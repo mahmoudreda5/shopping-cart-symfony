@@ -39,7 +39,7 @@ class WhatsappChannel extends BotChannel{
         static::$twilio = new Client($_ENV['SID'], $_ENV['TWILIO_TOKEN']);
     }
 
-     public function handleRequest(WhatsappRequest $channelRequest){
+     public function handleRequest(ChannelRequest $channelRequest){
 
          try{
              //abstract factory based on whatsapp request action

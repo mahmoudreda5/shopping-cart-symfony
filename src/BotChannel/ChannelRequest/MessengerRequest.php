@@ -75,7 +75,10 @@ class MessengerRequest extends ChannelRequest{
      */
     public function getUser(UserService $userService){
         //auth user with phone number
-        return $userService->findUserWithPSID($this->PSID);
+        $user = $userService->findUserWithPSID($this->PSID);
+        if(!$user) $user = $userService->createUserWithPSID($this->PSID);
+
+        return $user;
     }
 
     /**

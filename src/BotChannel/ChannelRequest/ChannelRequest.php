@@ -5,7 +5,7 @@ namespace App\BotChannel\ChannelRequest;
 
 use Symfony\Component\HttpFoundation\Request;
 
-abstract class ChannelRequest{
+abstract class ChannelRequest implements ChannelRequestInterface {
 
     public $request;
 

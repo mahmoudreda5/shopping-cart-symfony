@@ -2,10 +2,9 @@
 
 namespace App\BotChannel;
 
-use App\Entity\Product;
+use App\BotChannel\ChannelRequest\ChannelRequest;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 interface BotChannelInterface{
 
@@ -27,28 +26,26 @@ public function list();
      */
 public function cart();
 
-    // /**
-    //  * add product from specific channel
-    //  *
-    //  * @param Request,string
-    //  * @return mixed
-    //  */
-    // public function message(Request $request, string $message);
+    /**
+     * add product from specific channel
+     * @param $productIdOrName
+     */
+public function addProduct($productIdOrName);
 
-    // /**
-    //  * find user of specific channel
-    //  *
-    //  * @param Request
-    //  * @return mixed
-    //  */
-    // public function findUser(Request $request);
+    /**
+     * handle request of specific channel
+     *
+     * @param Request
+     * @return mixed
+     */
+public function process(ChannelRequest $channelRequest);
 
-    // /**
-    //  * handle request of specific channel
-    //  *
-    //  * @param Request
-    //  * @return mixed
-    //  */
-    // public function handleRequest(Request $request);
+     /**
+      * handle request of specific channel
+      *
+      * @param Request
+      * @return mixed
+      */
+ public function handleRequest(ChannelRequest $channelRequest);
 
 }

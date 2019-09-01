@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\ComponentInterface\Service\ProductService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\ProductRepository;
 use App\Entity\Product;
 use App\ComponentInterface\Factory\OrderCartFactory;
 use App\ComponentInterface\Factory\WishlistCartFactory;
@@ -17,10 +17,10 @@ class AppController extends AbstractController
     /**
      * @Route("/home", name="home")
      */
-    public function index(ProductRepository $productRepository)
+    public function index(ProductService $productService)
     {
 
-        $products = $productRepository->findAll();
+        $products = $productService->retrieveAllProducts();
         // dump($products); die;
 
         return $this->render("app/index.html.twig", ["products" => $products]);
