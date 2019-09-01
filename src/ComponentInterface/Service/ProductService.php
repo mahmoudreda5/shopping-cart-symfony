@@ -1,11 +1,12 @@
 <?php 
 
 namespace App\ComponentInterface\Service;
+use App\ComponentInterface\CustomException\ProductNotFoundException;
 use App\Repository\ProductRepository;
 
 
 
-class ProductService implements ProductServiceInterface{
+class ProductService{
 
     private $productRepo;
     public function __construct(ProductRepository $productRepo){
@@ -22,8 +23,13 @@ class ProductService implements ProductServiceInterface{
     /**
      * {@inheritDoc}
      */
-    public function findProductWithId($id) {
-        return $this->productRepo->findOneBy(["id" => $id]);
+    public function findProductWithIdOrName($idOrName) {
+        $product = $this->productRepo->findOneBy(["id" => $idOrName]);
+        if(!$product) $product = $this->productRepo->findOneBy(["name" => $idOrName]);
+
+        if(!$product) throw new ProductNotFoundException();
+
+        return $product;
     }
 
 

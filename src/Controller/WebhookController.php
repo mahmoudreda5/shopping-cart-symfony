@@ -2,31 +2,26 @@
 
 namespace App\Controller;
 
+use App\BotChannel\ChannelFactory;
+use App\BotChannel\ChannelRequest\WhatsappRequest;
+use App\BotChannel\WhatsappChannel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Psr\Log\LoggerInterface;
-
-use App\Entity\Product;
-use App\Entity\User;
-use App\Entity\OrderCart;
 
 use App\Repository\ProductRepository;
-use App\ComponentInterface\Factory\OrderCartFactory;
-
-use App\BotChannel\WhatsappChannel;
-use App\BotChannel\WhatsappInterface;
-
 
 
 class WebhookController extends AbstractController
 {
     /**
      * @Route("/webhook", name="webhook")
+     * @param Request $request
+     * @param ChannelFactory $channelFactory
+     * @return Request
      */
-    public function index(Request $request, ProductRepository $productRepository, LoggerInterface $logger, 
-                            OrderCartFactory $orderCartFactory, WhatsappChannel $whatsappChannel){
+    public function index(Request $request, ChannelFactory $channelFactory){
 
 
         ////////////////////////////////////////////////////////
@@ -34,12 +29,14 @@ class WebhookController extends AbstractController
             // return new Response();
         ////////////////////////////////////////////////////////
 
-        
-        return $whatsappChannel->handleRequest($request);    
+        $botChannel = $channelFactory->instantiateChannel(WhatsappChannel::class);
+        return $botChannel->handleRequest(new WhatsappRequest($request));
     }
 
     /**
      * @Route("/test", name="test")
+     * @param ProductRepository $productRepository
+     * @return Response
      */
     public function test(ProductRepository $productRepository){
         $products = $productRepository->findAll();

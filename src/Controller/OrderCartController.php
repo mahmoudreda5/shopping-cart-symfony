@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\BotChannel\ChannelRequest\WhatsappRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\ComponentInterface\Factory\OrderCartFactory;
@@ -16,7 +17,7 @@ use Psr\Log\LoggerInterface;
 use App\BotChannel\WhatsappChannel;
 use App\BotChannel\WhatsappInterface;
 
-use App\ComponentInterface\CustomException\CartHasProduct;
+use App\ComponentInterface\CustomException\CartHasProductException;
 
 /**
  * @Route("/order-cart", name="order_cart_")
@@ -56,10 +57,10 @@ class OrderCartController extends AbstractController
             $request->request->add(['To' => $botNumber]);
             $request->request->add(['From' => "whatsapp:+" . $orderCartFactory->getUser()->getPhone()]);
 
-            $message = $whatsappChannel->message($request, "You just added \"" .  $product->getName() . "\" to your shopping cart!");
+            $message = $whatsappChannel->whatsappMessage(new WhatsappRequest($request), "You just added \"" .  $product->getName() . "\" to your shopping cart!");
 
-        }catch(CartHasProduct $cartHasProduct){
-            $message = $whatsappChannel->message($request, "Product \"" . $product->getName()  . "\" is already in shopping your cart");
+        }catch(CartHasProductException $cartHasProduct){
+            $message = $whatsappChannel->whatsappMessage(new WhatsappRequest($request), "Product \"" . $product->getName()  . "\" is already in shopping your cart");
         }
 
         return $this->redirectToRoute('app_show_product', ["id" => $product->getId()]);

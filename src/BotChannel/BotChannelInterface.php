@@ -17,7 +17,7 @@ interface BotChannelInterface{
      * @param Request,Array
      * @return mixed
      */
-    public function list(Request $request, $products);
+public function list();
 
     /**
      * list cart products to specific channel
@@ -25,22 +25,30 @@ interface BotChannelInterface{
      * @param Request,Array
      * @return mixed
      */
-    public function cart(Request $request, $items);
+public function cart();
 
-    /**
-     * add product from specific channel
-     *
-     * @param Request,string
-     * @return mixed
-     */
-    public function message(Request $request, string $message);
+    // /**
+    //  * add product from specific channel
+    //  *
+    //  * @param Request,string
+    //  * @return mixed
+    //  */
+    // public function message(Request $request, string $message);
 
-    /**
-     * find user of specific channel
-     *
-     * @param Request
-     * @return mixed
-     */
-    public function findUser(Request $request);
+    // /**
+    //  * find user of specific channel
+    //  *
+    //  * @param Request
+    //  * @return mixed
+    //  */
+    // public function findUser(Request $request);
+
+    // /**
+    //  * handle request of specific channel
+    //  *
+    //  * @param Request
+    //  * @return mixed
+    //  */
+    // public function handleRequest(Request $request);
 
 }

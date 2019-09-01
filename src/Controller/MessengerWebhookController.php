@@ -2,19 +2,17 @@
 
 namespace App\Controller;
 
+use App\BotChannel\ChannelFactory;
+use App\BotChannel\ChannelRequest\MessengerRequest;
+use App\BotChannel\MessengerChannel;
+use BotMan\BotMan\BotMan;
+use BotMan\BotMan\BotManFactory;
+use BotMan\BotMan\Drivers\DriverManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
-
-use Symfony\Component\HttpClient\HttpClient;
-
-use App\Entity\Product;
-use App\Repository\ProductRepository;
 
 
 
@@ -22,8 +20,11 @@ class MessengerWebhookController extends AbstractController
 {
     /**
      * @Route("/messenger/webhook", name="messenger_webhook")
+     * @param Request $request
+     * @param ChannelFactory $channelFactory
+     * @return Response
      */
-    public function index(Request $request, LoggerInterface $logger, ProductRepository $productRepository)
+    public function index(Request $request, ChannelFactory $channelFactory)
     {
         ////////////////////////////////////////////////////////
             // $input = json_decode(file_get_contents('php://input'), true);
@@ -32,119 +33,35 @@ class MessengerWebhookController extends AbstractController
 
         // return $this->verifyWebhook($request);
 
-        
+        //load facebook driver for botman
+//         DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
+//
+//         //botman config
+//         $config = [
+//             'facebook' => [
+//                 'token' => $_ENV['FACEBOOK_TOKEN'],
+//                 'verification'=>$_ENV['FACEBOOK_VERIFY_TOKEN'],
+//             ]
+//         ];
+//
+//         // Create botman instance
+//         $botman = BotManFactory::create($config);
+//
+//
+//         // $messengerChannel->startHearing();
+//         $botman->hears('hello', function (BotMan $bot) {
+//             $bot->reply('hey');
+//         });
+//
+//         //start hearing
+//         $botman->listen();
 
-        // Give the bot something to listen for.
-        $botman->hears('hello there!', function (BotMan $bot) {
-            $bot->reply('Hello yourself.');
-        });
-
-        $botman->hears('Order', function (BotMan $bot) {
-            $bot->reply('it\'s working.');
-        });
-
-        $botman->hears('List', function (BotMan $bot) use ($productRepository, $request, $logger) {
-            //get all products
-            $products = $productRepository->findAll();
-            $elements = [];
-
-            for($i = 0; $i < count($products); $i++){
-                $elements[] = Element::create($products[$i]->getName())
-                        ->subtitle(substr($products[$i]->getDescription(), 0, 27) . " ...")
-                        // ->image($request->getUriForPath('/uploads/' . $products[$i]->getImage()))
-                        // ->image($request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/uploads/" . $products[$i]->getImage())
-                        ->image('https://pbs.twimg.com/profile_images/3677320779/32a3fde04e2a08045966a4cc19926328_400x400.jpeg')
-                        ->addButton(ElementButton::create('Details')
-                            ->url($request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/show/product/" . $products[$i]->getId())
-                        )
-                        ->addButton(ElementButton::create('Order')
-                            ->payload('order')
-                            ->type('postback')
-                        );
-            }
-
-            $bot->reply(GenericTemplate::create()
-                ->addImageAspectRatio(GenericTemplate::RATIO_SQUARE)
-                ->addElements($elements)
-            );
-
-            // if(count($elements) > 0){
-            //     $bot->reply('Hello yourself.');
-            // }
-
-            // for($i = 0; $i < /*count($products)*/ 4; $i++){
-            //     $elements[] = Element::create($products[$i]->getName())
-            //         ->subtitle(substr($products[$i]->getDescription(), 0, 27) . " ...")
-            //         ->image($request->getUriForPath('/uploads/' . $products[$i]->getImage()))
-            //         // ->addButton(ElementButton::create('tell me more')
-            //         //     ->payload('tellmemore')
-            //         //     ->type('postback')
-            //     // );
-            //     ->addButton(ElementButton::create('Details')
-            //         ->url($request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath() . "/show/product/" . $products[$i]->getId())
-            //     );
-            // }
-            
-            // $bot->reply(ListTemplate::create()
-            //     ->useCompactView()
-            //     // ->addGlobalButton(ElementButton::create('view more')
-            //     //     ->url('http://test.at')
-            //     // )
-            //     ->addElements($elements)
-            //     // ->addElement($elements[1])
-            //     // ->addElement($elements[2])
-            // );
-
-        });
+//        $channelFactory->logger->info($request->getContent());
 
 
-        // Start listening
-        $botman->listen();
+        $botChannel = $channelFactory->instantiateChannel(MessengerChannel::class);
+        return $botChannel->handleRequest(new MessengerRequest($request));
 
-        return new Response();
-
-
-        // $entries = json_decode($request->getContent())->entry;
-        // $PSID = null;
-        // $message = null;
-        // $attachments = null;
-        // $postback = null;
-        // foreach($entries as $entry){
-        //     $PSID = $entry->messaging[0]->sender->id;
-        //     $message = isset($entry->messaging[0]->message->text) ? $entry->messaging[0]->message->text : null;
-        //     $attachments = isset($entry->messaging[0]->message->attachments) ? $entry->messaging[0]->message->attachments : null;
-        //     $postback = isset($entry->messaging[0]->postback) ? $entry->messaging[0]->postback : null;
-
-        // }
-
-        // // $logger->info($PSID);
-        // // $logger->info(json_encode(json_encode($message)));
-        // // $logger->info(json_encode(json_encode($attachments)));            
-
-        // if($PSID && ($message || $attachments || $postback)){
-        //     $responseBody = null;
-
-            
-            
-        //     if($attachments){
-                
-        //         $responseBody = $this->prepareAttachment($PSID, $attachments);
-        //         // $logger->info(json_encode($responseBody));
-        //         // return new Response();
-        //     }else if($message){
-        //         // $responseBody = $this->prepareMessage($PSID, "you said " . $message . ", so i don't understand you anyway but welcome!");
-        //         $responseBody = $message == "Red" || $message == "Green" ? 
-        //         $this->prepareMessage($PSID, "you said " . $message) : $this->prepareQuickReplies($PSID);
-                
-            
-        //     }else if($postback){
-        //         $responseBody = $this->prepareMessage($PSID, "you said " . $postback->title);
-        //     }
-
-        //     $logger->info(json_encode($responseBody));
-            
-            
-    
         //     // $logger->info($request->getContent());
 
         //     $client = HttpClient::create();

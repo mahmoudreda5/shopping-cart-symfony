@@ -2,31 +2,16 @@
 
 namespace App\BotChannel;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use App\Entity\Product;
-
-use App\ComponentInterface\Service\UserServiceInterface;
-use App\ComponentInterface\Service\ProductServiceInterface;
+use App\BotChannel\ChannelRequest\ChannelRequest;
+use App\ComponentInterface\Service\ProductService;
+use App\ComponentInterface\Service\UserService;
 use App\ComponentInterface\Factory\OrderCartFactory;
 
-
-// use BotMan\BotMan\BotMan;
-// use BotMan\BotMan\BotManFactory;
-// use BotMan\BotMan\Drivers\DriverManager;
-
-// use BotMan\Drivers\Facebook\Extensions\Element;
-// use BotMan\Drivers\Facebook\Extensions\ElementButton;
-// use BotMan\Drivers\Facebook\Extensions\GenericTemplate;
-// use BotMan\Drivers\Facebook\Extensions\ListTemplate;
-
-use Symfony\Component\Dotenv\Dotenv;
+use App\Entity\OrderCart;
 use Psr\Log\LoggerInterface;
 
-use Symfony\Component\Security\Core\Security;
 
-
-abstract class BotChannel implements BotChannelInterface, WhatsappInterface, MessengerInterface{
+abstract class BotChannel implements BotChannelInterface{
 
     //singleton
     // public static $botChannel = null;
@@ -39,26 +24,8 @@ abstract class BotChannel implements BotChannelInterface, WhatsappInterface, Mes
     protected $logger;
 
 
-    public function __construct(UserServiceInterface $userService, ProductServiceInterface $productService, 
+    public function __construct(UserService $userService, ProductService $productService,
     OrderCartFactory $cartFactory, LoggerInterface $logger){
-
-        // //load channel credintials from .env
-        // $dotenv = new Dotenv();
-        // $dotenv->load(__DIR__.'/.env');
-
-        // //load facebook driver for botman
-        // DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
-
-        // //botman config
-        // $config = [
-        //     'facebook' => [
-        //         'token' => $_ENV['FACEBOOK_TOKEN'],
-        //         'verification'=>$_ENV['FACEBOOK_VERIFY_TOKEN'],
-        //     ]
-        // ];
-
-        // // Create botman instance
-        // $this->botman = BotManFactory::create($config);
 
         $this->userService = $userService;
         $this->productService = $productService;
@@ -68,5 +35,46 @@ abstract class BotChannel implements BotChannelInterface, WhatsappInterface, Mes
 
 
     //override any common behavior
+
+    public function process(ChannelRequest $channelRequest){
+
+        //assign user manually to the cart factory since no login in session
+        $user = $channelRequest->getUser($this->userService);
+        $this->assignCartUser($user);
+
+        $action = $channelRequest->getRequestAction();
+         switch($action){
+             case ChannelRequest::$list:
+                 return $this->list();
+                 break;
+             case ChannelRequest::$cart:
+                 return $this->cart();
+                 break;
+             default:
+                 return $this->addProduct($action);
+         }
+    }
+
+    public function list(){
+        //get all products
+        return $this->productService->retrieveAllProducts();
+    }
+
+    public function cart(){
+        //get cart products
+        return $this->cartFactory->cartProducts();
+    }
+
+     public function addProduct($productIdOrName){
+        $product = $this->productService->findProductWithIdOrName($productIdOrName);
+
+
+        $this->cartFactory->addProduct($product);
+        return $product;
+     }
+
+     public function assignCartUser($user){
+        $this->cartFactory->setUser($user, OrderCart::class);
+     }
 
 }

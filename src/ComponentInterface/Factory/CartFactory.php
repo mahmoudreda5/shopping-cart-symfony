@@ -2,6 +2,7 @@
 
 namespace App\ComponentInterface\Factory;
 
+use App\ComponentInterface\CustomException\ProductNotFoundException;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
@@ -18,7 +19,7 @@ use App\ComponentInterface\Cart\WishlistCartInterface;
 use App\Entity\WishlistCart;
 
 use App\ComponentInterface\CustomException\NullUserException;
-use App\ComponentInterface\CustomException\CartHasProduct;
+use App\ComponentInterface\CustomException\CartHasProductException;
 
 
 /** abstract class that defines basic objects and functionalities (by implementing CartFactoryInterface) for any cart */
@@ -130,12 +131,12 @@ abstract class CartFactory implements CartFactoryInterface{
     {
         //user may be not logged in, so it may be null
         if(!$this->user) throw new NullUserException("user not found!");
-        
+
         //to add product, first check CartItem
         if(!$cartItem) $cartItem = new CartItem();  //use default cartItem
 
         if($this->hasProduct($product))
-            throw new CartHasProduct("product exists already!");
+            throw new CartHasProductException($product);
 
         $cartItem->setProduct($product);  //product relashion established
         $this->cart->addItem($cartItem);  //cart relashion established, we can $orderCartItem->setCart($this->cart) too but this is more readable
