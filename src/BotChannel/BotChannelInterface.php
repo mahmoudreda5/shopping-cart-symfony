@@ -16,7 +16,7 @@ interface BotChannelInterface{
      * @param Request,Array
      * @return mixed
      */
-public function list();
+    public function list();
 
     /**
      * list cart products to specific channel
@@ -24,13 +24,13 @@ public function list();
      * @param Request,Array
      * @return mixed
      */
-public function cart();
+    public function cart();
 
     /**
      * add product from specific channel
      * @param $productIdOrName
      */
-public function addProduct($productIdOrName);
+    public function addProduct($productIdOrName);
 
     /**
      * handle request of specific channel
@@ -38,7 +38,7 @@ public function addProduct($productIdOrName);
      * @param Request
      * @return mixed
      */
-public function process(ChannelRequest $channelRequest);
+    public function process(ChannelRequest $channelRequest);
 
      /**
       * handle request of specific channel
@@ -46,6 +46,38 @@ public function process(ChannelRequest $channelRequest);
       * @param Request
       * @return mixed
       */
- public function handleRequest(ChannelRequest $channelRequest);
+    public function handleRequest(ChannelRequest $channelRequest);
+
+    //response construction methods, every channel must implement
+
+
+    /**
+     * @param ChannelRequest $channelRequest
+     * @param $response
+     * @return mixed
+     */
+    public function channelList(ChannelRequest $channelRequest, $response);
+
+    /**
+     * @param ChannelRequest $channelRequest
+     * @param $response
+     * @return mixed
+     */
+    public function channelCart(ChannelRequest $channelRequest, $response);
+
+    /**
+     * @param ChannelRequest $channelRequest
+     * @param string $message
+     * @return mixed
+     */
+    public function channelActions(ChannelRequest $channelRequest, string $message);
+
+    /**
+     * @param ChannelRequest $channelRequest
+     * @param string $message
+     * @return mixed
+     */
+    public function channelMessage(ChannelRequest $channelRequest, string $message);
+
 
 }

@@ -57,10 +57,10 @@ class OrderCartController extends AbstractController
             $request->request->add(['To' => $botNumber]);
             $request->request->add(['From' => "whatsapp:+" . $orderCartFactory->getUser()->getPhone()]);
 
-            $message = $whatsappChannel->whatsappMessage(new WhatsappRequest($request), "You just added \"" .  $product->getName() . "\" to your shopping cart!");
+            $message = $whatsappChannel->channelMessage(new WhatsappRequest($request), "You just added \"" .  $product->getName() . "\" to your shopping cart!");
 
         }catch(CartHasProductException $cartHasProduct){
-            $message = $whatsappChannel->whatsappMessage(new WhatsappRequest($request), "Product \"" . $product->getName()  . "\" is already in shopping your cart");
+            $message = $whatsappChannel->channelMessage(new WhatsappRequest($request), "Product \"" . $product->getName()  . "\" is already in shopping your cart");
         }
 
         return $this->redirectToRoute('app_show_product', ["id" => $product->getId()]);

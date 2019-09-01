@@ -39,46 +39,46 @@ class WhatsappChannel extends BotChannel{
         static::$twilio = new Client($_ENV['SID'], $_ENV['TWILIO_TOKEN']);
     }
 
-     public function handleRequest(ChannelRequest $channelRequest){
-
-         try{
-             //abstract factory based on whatsapp request action
-             $response = $this->process($channelRequest);
-
-
-             //construct whatsapp response
-             switch ($channelRequest->getRequestAction()){
-                 case ChannelRequest::$list:
-
-                     $this->whatsappList($channelRequest, $response);
-
-                     break;
-                 case ChannelRequest::$cart:
-
-                     $this->whatsappCart($channelRequest, $response);
-
-                     break;
-                 default:
-                     $this->whatsappMessage($channelRequest, "You just added \"" .  $response->getName() . "\" to your shopping cart!");
-             }
-         }catch(NullUserException $nullUser){
-             $this->whatsappMessage($channelRequest, "You need to register at shopping cart first! \n" .
-                     "Go " . $channelRequest->request->getSchemeAndHttpHost() . "/register");
-         }catch (ProductNotFoundException $productNotFound){
-             $this->whatsappMessage($channelRequest, "You said " .  $channelRequest->getBody() . ",  sorry i didn't understand you!"
-                     . "\n\nsend: \n'List' for listing all products \n'Cart' for your cart products \n'Product Id' to add it to cart..");
-         }catch (CartHasProductException $cartHasProduct){
-             $this->whatsappMessage($channelRequest, "Product \"" . $cartHasProduct->product->getName()  . "\" is already in shopping your cart");
-         }
-
-         return new Response();
-     }
+//     public function handleRequest(ChannelRequest $channelRequest){
+//
+//         try{
+//             //abstract factory based on whatsapp request action
+//             $response = $this->process($channelRequest);
+//
+//
+//             //construct whatsapp response
+//             switch ($channelRequest->getRequestAction()){
+//                 case ChannelRequest::$list:
+//
+//                     $this->whatsappList($channelRequest, $response);
+//
+//                     break;
+//                 case ChannelRequest::$cart:
+//
+//                     $this->whatsappCart($channelRequest, $response);
+//
+//                     break;
+//                 default:
+//                     $this->whatsappMessage($channelRequest, "You just added \"" .  $response->getName() . "\" to your shopping cart!");
+//             }
+//         }catch(NullUserException $nullUser){
+//             $this->whatsappMessage($channelRequest, "You need to register at shopping cart first! \n" .
+//                     "Go " . $channelRequest->request->getSchemeAndHttpHost() . "/register");
+//         }catch (ProductNotFoundException $productNotFound){
+//             $this->whatsappMessage($channelRequest, "You said " .  $channelRequest->getBody() . ",  sorry i didn't understand you!"
+//                     . "\n\nsend: \n'List' for listing all products \n'Cart' for your cart products \n'Product Id' to add it to cart..");
+//         }catch (CartHasProductException $cartHasProduct){
+//             $this->whatsappMessage($channelRequest, "Product \"" . $cartHasProduct->product->getName()  . "\" is already in shopping your cart");
+//         }
+//
+//         return new Response();
+//     }
 
 
     /**
      * {@inheritDoc}
      */
-    protected function whatsappList(WhatsappRequest $channelRequest, $response){
+    public function channelList(ChannelRequest $channelRequest, $response){
 
         foreach ($response as $product){
             $message = $this->sendWhatsappMessageOrMedia(static::$twilio, $channelRequest,
@@ -99,7 +99,7 @@ class WhatsappChannel extends BotChannel{
     /**
      * {@inheritDoc}
      */
-    protected function whatsappCart(WhatsappRequest $channelRequest, $response){
+    public function channelCart(ChannelRequest $channelRequest, $response){
 
         if(!$response || count($response) == 0)
             $message = $this->sendWhatsappMessageOrMedia(static::$twilio, $channelRequest, "Your cart is empty!, send a 'Product Id' to add it to your shopping cart.");
@@ -124,7 +124,15 @@ class WhatsappChannel extends BotChannel{
     /**
      * {@inheritDoc}
      */
-    public function whatsappMessage(WhatsappRequest $channelRequest, string $message){
+    public function channelActions(ChannelRequest $channelRequest, string $message){
+        $message .= "\n\nsend: \n'List' for listing all products \n'Cart' for your cart products \n'Product Id' to add it to cart..";
+        return $this->channelMessage($channelRequest, $message);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function channelMessage(ChannelRequest $channelRequest, string $message){
 
         $message = $this->sendWhatsappMessageOrMedia(static::$twilio, $channelRequest, $message);
         return $message;

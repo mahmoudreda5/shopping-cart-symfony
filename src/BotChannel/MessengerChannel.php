@@ -54,49 +54,49 @@ class MessengerChannel extends BotChannel {
         static::$botman = BotManFactory::create($config);
     }
 
-    public function handleRequest(ChannelRequest $channelRequest){
-
-        try{
-            //abstract factory based on whatsapp request action
-            $response = $this->process($channelRequest);
-
-
-            //construct whatsapp response
-            switch ($channelRequest->getRequestAction()){
-                case ChannelRequest::$list:
-
-                    $this->messengerList($channelRequest, $response);
-
-                    break;
-                case ChannelRequest::$cart:
-
-                    $this->messengerCart($channelRequest, $response);
-
-                    break;
-                default:
-                    $this->messengerMessage($channelRequest, "You just added \"" .  $response->getName() . "\" to your shopping cart!");
-            }
-        }catch(NullUserException $nullUser){
-            $this->messengerMessage($channelRequest, "You need to register at shopping cart first! \n" .
-                "Go " . $channelRequest->request->getSchemeAndHttpHost() . "/register");
-        }catch (ProductNotFoundException $productNotFound){
-            $this->messengerActions($channelRequest, "You said " .  $channelRequest->getText() . ",  sorry i didn't understand you!");
-        }catch (CartHasProductException $cartHasProduct){
-            $this->messengerMessage($channelRequest, "Product \"" . $cartHasProduct->product->getName()  . "\" is already in shopping your cart");
-        }
-
-
-        //start hearing
-//        static::$botman->listen();
-        return new Response();
-    }
+//    public function handleRequest(ChannelRequest $channelRequest){
+//
+//        try{
+//            //abstract factory based on whatsapp request action
+//            $response = $this->process($channelRequest);
+//
+//
+//            //construct whatsapp response
+//            switch ($channelRequest->getRequestAction()){
+//                case ChannelRequest::$list:
+//
+//                    $this->messengerList($channelRequest, $response);
+//
+//                    break;
+//                case ChannelRequest::$cart:
+//
+//                    $this->messengerCart($channelRequest, $response);
+//
+//                    break;
+//                default:
+//                    $this->messengerMessage($channelRequest, "You just added \"" .  $response->getName() . "\" to your shopping cart!");
+//            }
+//        }catch(NullUserException $nullUser){
+//            $this->messengerMessage($channelRequest, "You need to register at shopping cart first! \n" .
+//                "Go " . $channelRequest->request->getSchemeAndHttpHost() . "/register");
+//        }catch (ProductNotFoundException $productNotFound){
+//            $this->messengerActions($channelRequest, "You said " .  $channelRequest->getText() . ",  sorry i didn't understand you!");
+//        }catch (CartHasProductException $cartHasProduct){
+//            $this->messengerMessage($channelRequest, "Product \"" . $cartHasProduct->product->getName()  . "\" is already in shopping your cart");
+//        }
+//
+//
+//        //start hearing
+////        static::$botman->listen();
+//        return new Response();
+//    }
 
 
 
     /**
      * {@inheritDoc}
      */
-    public function messengerList(MessengerRequest $channelRequest, $response){
+    public function channelList(ChannelRequest $channelRequest, $response){
 
         $elements = [];
 
@@ -124,7 +124,7 @@ class MessengerChannel extends BotChannel {
     /**
      * {@inheritDoc}
      */
-    public function messengerCart(MessengerRequest $channelRequest, $response){
+    public function channelCart(ChannelRequest $channelRequest, $response){
 
         $elements = [];
 
@@ -147,7 +147,7 @@ class MessengerChannel extends BotChannel {
         , $channelRequest->getPSID()) : static::$botman->say("Your cart is empty!, send a 'Product Id' to add it to your shopping cart.", $channelRequest->getPSID());
     }
 
-    public function messengerActions(MessengerRequest $channelRequest, string $message){
+    public function channelActions(ChannelRequest $channelRequest, string $message){
         static::$botman->say(Question::create($message)->addButtons([
             Button::create('List')->value('list_messenger'),
             Button::create('Cart')->value('cart_messenger'),
@@ -157,7 +157,7 @@ class MessengerChannel extends BotChannel {
     /**
      * {@inheritDoc}
      */
-    public function messengerMessage(MessengerRequest $channelRequest, string $message){
+    public function channelMessage(ChannelRequest $channelRequest, string $message){
         static::$botman->say($message, $channelRequest->getPSID());
     }
 
