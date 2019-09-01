@@ -23,12 +23,6 @@ class WebhookController extends AbstractController
      */
     public function index(Request $request, ChannelFactory $channelFactory){
 
-
-        ////////////////////////////////////////////////////////
-            // $logger->info(json_encode($request->request->all()));
-            // return new Response();
-        ////////////////////////////////////////////////////////
-
         $botChannel = $channelFactory->instantiateChannel(WhatsappChannel::class);
         return $botChannel->handleRequest(new WhatsappRequest($request));
     }
@@ -39,12 +33,6 @@ class WebhookController extends AbstractController
      * @return Response
      */
     public function test(ProductRepository $productRepository){
-        $products = $productRepository->findAll();
-
-        echo "<pre>"; 
-        var_dump($products[0]->getName());
-        echo "</pre>";
-
-        return new Response();
+        //any code for testing
     }
 }

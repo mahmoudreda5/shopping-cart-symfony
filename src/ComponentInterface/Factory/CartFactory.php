@@ -2,7 +2,6 @@
 
 namespace App\ComponentInterface\Factory;
 
-use App\ComponentInterface\CustomException\ProductNotFoundException;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;

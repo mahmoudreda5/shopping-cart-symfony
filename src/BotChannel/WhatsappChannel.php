@@ -4,14 +4,10 @@ namespace App\BotChannel;
 
 use App\BotChannel\ChannelRequest\ChannelRequest;
 use App\BotChannel\ChannelRequest\WhatsappRequest;
-use App\ComponentInterface\CustomException\CartHasProductException;
-use App\ComponentInterface\CustomException\NullUserException;
-use App\ComponentInterface\CustomException\ProductNotFoundException;
+
 use App\ComponentInterface\Service\ProductService;
 use App\ComponentInterface\Service\UserService;
 
-
-use Symfony\Component\HttpFoundation\Response;
 use Twilio\Rest\Client;
 
 use App\ComponentInterface\Service\UserServiceInterface;
@@ -38,42 +34,6 @@ class WhatsappChannel extends BotChannel{
         //instantiate channel client
         static::$twilio = new Client($_ENV['SID'], $_ENV['TWILIO_TOKEN']);
     }
-
-//     public function handleRequest(ChannelRequest $channelRequest){
-//
-//         try{
-//             //abstract factory based on whatsapp request action
-//             $response = $this->process($channelRequest);
-//
-//
-//             //construct whatsapp response
-//             switch ($channelRequest->getRequestAction()){
-//                 case ChannelRequest::$list:
-//
-//                     $this->whatsappList($channelRequest, $response);
-//
-//                     break;
-//                 case ChannelRequest::$cart:
-//
-//                     $this->whatsappCart($channelRequest, $response);
-//
-//                     break;
-//                 default:
-//                     $this->whatsappMessage($channelRequest, "You just added \"" .  $response->getName() . "\" to your shopping cart!");
-//             }
-//         }catch(NullUserException $nullUser){
-//             $this->whatsappMessage($channelRequest, "You need to register at shopping cart first! \n" .
-//                     "Go " . $channelRequest->request->getSchemeAndHttpHost() . "/register");
-//         }catch (ProductNotFoundException $productNotFound){
-//             $this->whatsappMessage($channelRequest, "You said " .  $channelRequest->getBody() . ",  sorry i didn't understand you!"
-//                     . "\n\nsend: \n'List' for listing all products \n'Cart' for your cart products \n'Product Id' to add it to cart..");
-//         }catch (CartHasProductException $cartHasProduct){
-//             $this->whatsappMessage($channelRequest, "Product \"" . $cartHasProduct->product->getName()  . "\" is already in shopping your cart");
-//         }
-//
-//         return new Response();
-//     }
-
 
     /**
      * {@inheritDoc}
