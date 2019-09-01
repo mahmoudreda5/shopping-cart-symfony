@@ -57,8 +57,8 @@ class MessengerChannel extends BotChannel {
         for($i = 0; $i < count($response); $i++){
             $elements[] = Element::create($response[$i]->getName())
                     ->subtitle(substr($response[$i]->getDescription(), 0, 27) . " ...")
-                    // ->image($channelRequest->request->getUriForPath('/uploads/' . $response[$i]->getImage()))
-                    ->image('https://pbs.twimg.com/profile_images/3677320779/32a3fde04e2a08045966a4cc19926328_400x400.jpeg')
+                     ->image($channelRequest->request->getUriForPath('/uploads/' . $response[$i]->getImage()))
+//                    ->image('https://pbs.twimg.com/profile_images/3677320779/32a3fde04e2a08045966a4cc19926328_400x400.jpeg')
                     ->addButton(ElementButton::create('Details')
                         ->url($channelRequest->request->getSchemeAndHttpHost() . "/show/product/" . $response[$i]->getId())
                     )
@@ -85,8 +85,8 @@ class MessengerChannel extends BotChannel {
         foreach($response as $item){
             $elements[] = Element::create($item["product"]["name"])
                     ->subtitle(substr($item["product"]["description"], 0, 27) . " ...")
-                    // ->image($channelRequest->request->getUriForPath('/uploads/' . $item["product"]["image"]))
-                    ->image('https://pbs.twimg.com/profile_images/3677320779/32a3fde04e2a08045966a4cc19926328_400x400.jpeg')
+                     ->image($channelRequest->request->getUriForPath('/uploads/' . $item["product"]["image"]))
+//                    ->image('https://pbs.twimg.com/profile_images/3677320779/32a3fde04e2a08045966a4cc19926328_400x400.jpeg')
                     ->addButton(ElementButton::create('Details')
                         ->url($channelRequest->request->getSchemeAndHttpHost() . "/show/product/" . $item["product"]["id"])
                     )
