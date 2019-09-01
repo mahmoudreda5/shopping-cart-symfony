@@ -24,8 +24,10 @@ class MessengerWebhookController extends AbstractController
     public function index(Request $request, ChannelFactory $channelFactory)
     {
 
-        $botChannel = $channelFactory->instantiateChannel(MessengerChannel::class);
-        return $botChannel->handleRequest(new MessengerRequest($request));
+        return $this->verifyWebhook($request);
+
+//        $botChannel = $channelFactory->instantiateChannel(MessengerChannel::class);
+//        return $botChannel->handleRequest(new MessengerRequest($request));
     }
 
 
