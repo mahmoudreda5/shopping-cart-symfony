@@ -50,6 +50,10 @@ interface BotChannelInterface{
 
     //response construction methods, every channel must implement
 
+    /**
+     * @return mixed
+     */
+    public function initializeChannelClient();
 
     /**
      * @param ChannelRequest $channelRequest

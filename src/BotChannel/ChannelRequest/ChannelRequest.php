@@ -28,6 +28,7 @@ abstract class ChannelRequest implements ChannelRequestInterface {
     //abstract actions provided
     public static $list = "List";
     public static $cart = "Cart";
+    public static $registerMe = "REGISTER_ME";
 //    public static $addProduct = "Product";
 
 

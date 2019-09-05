@@ -4,8 +4,11 @@ namespace App\BotChannel;
 
 use App\BotChannel\ChannelRequest\ChannelRequest;
 use App\ComponentInterface\CustomException\CartHasProductException;
+use App\ComponentInterface\CustomException\NoFormIsOpened;
 use App\ComponentInterface\CustomException\NullUserException;
 use App\ComponentInterface\CustomException\ProductNotFoundException;
+use App\ComponentInterface\Service\FormLoggingService;
+use App\ComponentInterface\Service\FormService;
 use App\ComponentInterface\Service\ProductService;
 use App\ComponentInterface\Service\UserService;
 use App\ComponentInterface\Factory\OrderCartFactory;
@@ -25,16 +28,22 @@ abstract class BotChannel implements BotChannelInterface{
     protected $userService;
     protected $productService;
     protected $cartFactory;
+    protected $formLoggingService;
+    protected $formService;
     protected $logger;
 
 
     public function __construct(UserService $userService, ProductService $productService,
-    OrderCartFactory $cartFactory, LoggerInterface $logger){
+    OrderCartFactory $cartFactory, FormLoggingService $formLoggingService, FormService $formService, LoggerInterface $logger){
 
         $this->userService = $userService;
         $this->productService = $productService;
         $this->cartFactory = $cartFactory;
+        $this->formLoggingService = $formLoggingService;
+        $this->formService = $formService;
         $this->logger = $logger;
+
+        $this->initializeChannelClient();
     }
 
 
@@ -47,7 +56,7 @@ abstract class BotChannel implements BotChannelInterface{
              $response = $this->process($channelRequest);
 
 
-             //construct whatsapp response
+             //construct channel response
              switch ($channelRequest->getRequestAction()){
                  case ChannelRequest::$list:
 
@@ -60,11 +69,13 @@ abstract class BotChannel implements BotChannelInterface{
 
                      break;
                  default:
-                     $this->channelMessage($channelRequest, "You just added \"" .  $response->getName() . "\" to your shopping cart!");
+                     $this->channelMessage($channelRequest, $response);
+
              }
          }catch(NullUserException $nullUser){
-             $this->channelMessage($channelRequest, "You need to register at shopping cart first! \n" .
-                     "Go " . $channelRequest->request->getSchemeAndHttpHost() . "/register");
+             $this->channelMessage($channelRequest, "You need to register at shopping cart first! \n\n" .
+                 "Send REGISTER_ME to register here :D\n" .
+                "OR Go " . $channelRequest->request->getSchemeAndHttpHost() . "/register");
          }catch (ProductNotFoundException $productNotFound){
              $this->channelActions($channelRequest, "You said " .  $channelRequest->getMessage() . ",  sorry i didn't understand you!");
          }catch (CartHasProductException $cartHasProduct){
@@ -88,8 +99,11 @@ abstract class BotChannel implements BotChannelInterface{
              case ChannelRequest::$cart:
                  return $this->cart();
                  break;
+//             case ChannelRequest::$registerMe:
+//                 return $this->startForm($channelRequest);
+//                 break;
              default:
-                 return $this->addProduct($action);
+                 return $this->processMessage($channelRequest, $action);
          }
     }
 
@@ -114,5 +128,26 @@ abstract class BotChannel implements BotChannelInterface{
      public function assignCartUser($user){
         $this->cartFactory->setUser($user, OrderCart::class);
      }
+
+     public function processMessage(ChannelRequest $channelRequest, string $message){
+
+        try{
+
+            return $this->formService->handleFormIfAvailable($channelRequest, $message);
+
+        }catch (NoFormIsOpened $noFormIsOpened){
+
+            $addedProduct = $this->addProduct($message);
+            return "You just added \"" .  $addedProduct->getName() . "\" to your shopping cart!";
+
+        }
+
+     }
+
+//     public function startForm(ChannelRequest $channelRequest){
+//
+//        return $startMessage = $this->formService->startUserForm($channelRequest);
+//
+//     }
 
 }

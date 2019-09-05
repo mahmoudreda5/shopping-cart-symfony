@@ -53,9 +53,15 @@ class User implements UserInterface
      */
     private $phone;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\FormLog", mappedBy="user")
+     */
+    private $formLogs;
+
     public function __construct()
     {
         $this->carts = new ArrayCollection();
+        $this->formLogs = new ArrayCollection();
     }
 
     public function setId(int $id)
@@ -194,6 +200,37 @@ class User implements UserInterface
     public function setPhone(string $phone): self
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|FormLog[]
+     */
+    public function getFormLogs(): Collection
+    {
+        return $this->formLogs;
+    }
+
+    public function addFormLog(FormLog $formLog): self
+    {
+        if (!$this->formLogs->contains($formLog)) {
+            $this->formLogs[] = $formLog;
+            $formLog->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFormLog(FormLog $formLog): self
+    {
+        if ($this->formLogs->contains($formLog)) {
+            $this->formLogs->removeElement($formLog);
+            // set the owning side to null (unless already changed)
+            if ($formLog->getUser() === $this) {
+                $formLog->setUser(null);
+            }
+        }
 
         return $this;
     }

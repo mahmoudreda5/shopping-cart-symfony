@@ -27,11 +27,27 @@ class MessengerChannel extends BotChannel {
     //botman client
     public static $botman = null;
 
-    public function __construct(UserService $userService, ProductService $productService,
-     OrderCartFactory $cartFactory, LoggerInterface $logger){
+//    public function __construct(UserService $userService, ProductService $productService,
+//     OrderCartFactory $cartFactory, LoggerInterface $logger){
+//
+//        parent::__construct($userService, $productService, $cartFactory, $logger);
+//
+//        //load facebook driver for botman
+//        DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
+//
+//        //botman config
+//        $config = [
+//            'facebook' => [
+//                'token' => $_ENV['FACEBOOK_TOKEN'],
+//                'verification'=>$_ENV['FACEBOOK_VERIFY_TOKEN'],
+//            ]
+//        ];
+//
+//        // Create botman instance
+//        static::$botman = BotManFactory::create($config);
+//    }
 
-        parent::__construct($userService, $productService, $cartFactory, $logger);
-
+    public function initializeChannelClient(){
         //load facebook driver for botman
         DriverManager::loadDriver(\BotMan\Drivers\Facebook\FacebookDriver::class);
 

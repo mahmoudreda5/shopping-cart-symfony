@@ -26,11 +26,16 @@ class WhatsappChannel extends BotChannel{
     //twilio client
     private static $twilio = null;
 
-    public function __construct(UserService $userService, ProductService $productService,
-     OrderCartFactory $cartFactory, LoggerInterface $logger){
+//    public function __construct(UserService $userService, ProductService $productService,
+//     OrderCartFactory $cartFactory, LoggerInterface $logger){
+//
+//        parent::__construct($userService, $productService, $cartFactory, $logger);
+//
+//        //instantiate channel client
+//        static::$twilio = new Client($_ENV['SID'], $_ENV['TWILIO_TOKEN']);
+//    }
 
-        parent::__construct($userService, $productService, $cartFactory, $logger);
-
+    public function initializeChannelClient(){
         //instantiate channel client
         static::$twilio = new Client($_ENV['SID'], $_ENV['TWILIO_TOKEN']);
     }

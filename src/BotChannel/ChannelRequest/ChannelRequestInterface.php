@@ -23,4 +23,9 @@ interface ChannelRequestInterface{
      */
     public function getUser(UserService $userService);
 
+    /**
+     * @return mixed
+     */
+    public function getUserIdentification();
+
 }

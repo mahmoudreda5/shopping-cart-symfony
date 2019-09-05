@@ -63,6 +63,9 @@ class WhatsappRequest extends ChannelRequest{
             case 'cart':
                 return static::$cart;
                 break;
+            case 'REGISTER_ME':
+                return static::$registerMe;
+                break;
             default:
                 return $action;
         }
@@ -76,6 +79,13 @@ class WhatsappRequest extends ChannelRequest{
         //auth user with phone number
         $phone = $this->getUserPhone();
         return $userService->findUserWithPhone($phone);
+    }
+    /**
+     * {@inheritDoc}
+     */
+    public function getUserIdentification()
+    {
+        return $this->getUserPhone();
     }
 
 

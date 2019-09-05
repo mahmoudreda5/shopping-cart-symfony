@@ -27,11 +27,11 @@ class MessengerRequest extends ChannelRequest{
 
     public function __construct(Request $request){
 
-        $this->constructWhatsappRequest($request);
+        $this->constructMessengerRequest($request);
 
     }
 
-    public function constructWhatsappRequest(Request $request){
+    public function constructMessengerRequest(Request $request){
 
         parent::__construct($request);
 
@@ -80,6 +80,15 @@ class MessengerRequest extends ChannelRequest{
 
         return $user;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUserIdentification()
+    {
+        return $this->PSID;
+    }
+
 
     /**
      * @return mixed
