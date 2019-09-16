@@ -3,16 +3,17 @@
 namespace App\Controller;
 
 use App\BotChannel\ChannelRequest\WhatsappRequest;
+use App\Event\ProductAddedEvent;
+use App\Event\ProductAddedListener;
+use App\Event\ProductAddedSubscriber;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\ComponentInterface\Factory\OrderCartFactory;
 use App\Entity\Product;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-
-use Twilio\Rest\Client;
-use Twilio\TwiML\MessagingResponse;
-use Psr\Log\LoggerInterface;
 
 use App\BotChannel\WhatsappChannel;
 use App\BotChannel\WhatsappInterface;
@@ -44,16 +45,24 @@ class OrderCartController extends AbstractController
     /**
      * @Route("/add-item/{id}", name="add_item")
      */
-    public function addCartItem(Request $request, Product $product, OrderCartFactory $orderCartFactory, WhatsappChannel $whatsappChannel){
+    public function addCartItem(Request $request, Product $product, OrderCartFactory $orderCartFactory, WhatsappChannel $whatsappChannel
+                                /*EventDispatcherInterface $eventDispatcher, ProductAddedListener $productAddedListener*/){
 
-        //notify user
+        //TODO: notify user, dispatch it to event dispatcher
         try{
 
             //add product to authenticated user OrderCart
             $orderCartFactory->addProduct($product);
 
+//            $productAddedEvent = new ProductAddedEvent($product, $request);
+//
+//            //add event listener, can be done in yaml file too
+//            $eventDispatcher->addListener(ProductAddedEvent::NAME, [$productAddedListener, 'onProductAdded']);
+//
+//            $eventDispatcher->dispatch(ProductAddedEvent::NAME, $productAddedEvent);
+
             //set From and To request params mannually
-            $botNumber = "whatsapp:+14155238886";
+            $botNumber = WhatsappChannel::NUMBER;
             $request->request->add(['To' => $botNumber]);
             $request->request->add(['From' => "whatsapp:+" . $orderCartFactory->getUser()->getPhone()]);
 

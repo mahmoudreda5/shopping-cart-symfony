@@ -39,5 +39,7 @@ security:
         - { path: ^/show/product, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/webhook, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/messenger/webhook, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/messenger/broadcast, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/test, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/info, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

@@ -117,7 +117,7 @@ class FormService{
 
     }
 
-    public function askNextQuestion(ChannelRequest $channelRequest, Question $previousQuestion, string $message){
+    public function askNextQuestion(ChannelRequest $channelRequest, Question $previousQuestion, $message){
 
         //save answer, reply with next question
         $this->formLoggingService->insertFormLog($channelRequest->getUserIdentification(), $previousQuestion, null, $message);
@@ -131,7 +131,7 @@ class FormService{
         return $nextFormQuestion;
     }
 
-    public function handleFormIfOpened(ChannelRequest $channelRequest, string $message){
+    public function handleFormIfOpened(ChannelRequest $channelRequest, $message){
 
         //check form status for this user
         if(!$this->isUserFormOpened($channelRequest->getUserIdentification()))
@@ -167,7 +167,7 @@ class FormService{
 
     }
 
-    public function handleFormIfAvailable(ChannelRequest $channelRequest, string $message){
+    public function handleFormIfAvailable(ChannelRequest $channelRequest, $message){
 
         return $message == ChannelRequest::$registerMe ? $this->startUserForm($channelRequest) : $this->handleFormIfOpened($channelRequest, $message);
 

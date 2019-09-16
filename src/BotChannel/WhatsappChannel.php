@@ -8,6 +8,7 @@ use App\BotChannel\ChannelRequest\WhatsappRequest;
 use App\ComponentInterface\Service\ProductService;
 use App\ComponentInterface\Service\UserService;
 
+use BotMan\BotMan\BotMan;
 use Twilio\Rest\Client;
 
 use App\ComponentInterface\Service\UserServiceInterface;
@@ -26,14 +27,7 @@ class WhatsappChannel extends BotChannel{
     //twilio client
     private static $twilio = null;
 
-//    public function __construct(UserService $userService, ProductService $productService,
-//     OrderCartFactory $cartFactory, LoggerInterface $logger){
-//
-//        parent::__construct($userService, $productService, $cartFactory, $logger);
-//
-//        //instantiate channel client
-//        static::$twilio = new Client($_ENV['SID'], $_ENV['TWILIO_TOKEN']);
-//    }
+    const NUMBER = "whatsapp:+14155238886";
 
     public function initializeChannelClient(){
         //instantiate channel client

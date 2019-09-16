@@ -129,13 +129,14 @@ abstract class BotChannel implements BotChannelInterface{
         $this->cartFactory->setUser($user, OrderCart::class);
      }
 
-     public function processMessage(ChannelRequest $channelRequest, string $message){
+     public function processMessage(ChannelRequest $channelRequest, $message){
 
         try{
 
             return $this->formService->handleFormIfAvailable($channelRequest, $message);
 
         }catch (NoFormIsOpened $noFormIsOpened){
+
 
             $addedProduct = $this->addProduct($message);
             return "You just added \"" .  $addedProduct->getName() . "\" to your shopping cart!";
